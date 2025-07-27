@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard - Apna Mandi</title>
+
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <meta name="description" content="Manage your products, orders, and earnings on the Apna Mandi vendor dashboard for street food.">
+    <meta name="keywords" content="vendor dashboard, Apna Mandi, marketplace, orders, products, earnings, seller, street food, Kolkata, food supplies, B2B">
+    <meta name="author" content="Apna Mandi Team">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.apnamandi.com/vendor/dashboard"> <meta property="og:title" content="Vendor Dashboard - Apna Mandi">
+    <meta property="og:description" content="Manage your products, orders, and earnings on the Apna Mandi vendor dashboard for street food.">
+    <meta property="og:image" content="https://www.apnamandi.com/images/apna-mandi-logo.png"> <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.apnamandi.com/vendor/dashboard"> <meta property="twitter:title" content="Vendor Dashboard - Apna Mandi">
+    <meta property="twitter:description" content="Manage your products, orders, and earnings on the Apna Mandi vendor dashboard for street food.">
+    <meta property="twitter:image" content="https://www.apnamandi.com/images/apna-mandi-logo.png"> <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com/@phosphor-icons/web">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* General body styling (can be inline or in <style> block) */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Active sidebar link styling */
+        .sidebar-link.active {
+            background-color: #ECFDF5; /* Green 50 for light mode */
+            color: #10B981; /* Green 500 for light mode */
+            font-weight: 600;
+        }
+
+        .dark .sidebar-link.active {
+            background-color: #1D4ED8; /* Blue 700 for dark mode (or a darker green) */
+            color: #6EE7B7; /* Green 300 for dark mode */
+        }
+
+        /* Styles for disabled elements when profile is incomplete */
+        .dashboard-locked {
+            pointer-events: none; /* Disables all clicks */
+            opacity: 0.6; /* Visually indicates disabled state */
+            filter: grayscale(100%); /* Optional: for stronger visual cue */
+        }
+
+        /* Invoice-specific styles (for the new window/tab) */
+        .invoice-body {
+            font-family: 'Inter', sans-serif;
+            margin: 0; /* Remove default body margin */
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f8f8; /* Light background for the invoice page itself */
+            min-height: 100vh; /* Ensure full height for background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+        .invoice-container {
+            width: 95%; /* Wider for better mobile view */
+            max-width: 800px;
+            border: 1px solid #eee;
+            padding: 20px; /* Reduced padding for mobile */
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            background-color: #fff;
+            margin-bottom: 20px; /* Space from bottom */
+        }
+        .invoice-header { text-align: center; margin-bottom: 20px; }
+        .invoice-header h1 { color: #10B981; margin-bottom: 5px; font-size: 1.8em; }
+        .invoice-header p { margin: 0; font-size: 0.8em; }
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column on small screens */
+            gap: 10px; /* Reduced gap for mobile */
+            margin-bottom: 20px;
+        }
+        @media (min-width: 640px) { /* Small screens and up */
+            .details-grid {
+                grid-template-columns: 1fr 1fr; /* Two columns on larger screens */
+                gap: 15px;
+            }
+            .invoice-container {
+                padding: 30px; /* Restore padding for larger screens */
+            }
+        }
+        .details-grid div { background-color: #f9f9f9; padding: 10px; border-radius: 5px; }
+        .details-grid strong { color: #555; }
+        .invoice-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .invoice-table th, .invoice-table td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.9em; }
+        .invoice-table th { background-color: #e6ffe6; color: #333; }
+        .text-right { text-align: right; }
+        .summary-table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        .summary-table td { padding: 8px; border: none; font-size: 0.9em; }
+        .summary-table .label { text-align: right; font-weight: bold; padding-right: 15px; }
+        .summary-table .value { text-align: right; font-weight: bold; color: #10B981; }
+        .summary-table .grand-total-row { border-top: 2px solid #10B981; font-size: 1.1em; }
+        .invoice-footer { margin-top: 40px; text-align: center; font-size: 0.8em; color: #777; }
+        .invoice-note { margin-top: 20px; padding: 15px; background-color: #fff3cd; border-left: 5px solid #ffc107; color: #664d03; font-size: 0.9em; }
+        .download-instruction-box {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e0f7fa;
+            border: 1px solid #00bcd4;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #00796b;
+        }
+        .download-instruction-box strong {
+            color: #004d40;
+        }
+        .download-instruction-box button {
+            background-color: #00796b;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .download-instruction-box button:hover {
+            background-color: #004d40;
+        }
+
+        /* Mobile-specific styles for sidebar toggle */
+        #sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 40; /* Below modal but above main content */
+        }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+        @media (min-width: 768px) { /* MD breakpoint */
+            #sidebar {
+                transform: translateX(0); /* Always visible on desktop */
+                position: relative;
+                box-shadow: none; /* Remove redundant shadow on desktop */
+            }
+            #menuToggleBtn {
+                display: none !important; /* Hide hamburger on desktop */
+            }
+        }
+        
+        /* Overlay for mobile menu */
+        #menuOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30; /* Below sidebar, above main content */
+        }
+
+        /* Business Growth Graph Placeholder Styling */
+        .business-growth-graph-placeholder {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+            text-align: center;
+            color: #4B5563;
+        }
+        .dark .business-growth-graph-placeholder {
+            background-color: #1F2937;
+            color: #D1D5DB;
+        }
+        .business-growth-graph-placeholder .growth-line {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to right, #10B981, #3B82F6, #F59E0B);
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><path fill="none" stroke="black" stroke-width="2" d="M0 40 Q 20 10 40 30 T 80 20 T 100 45"/></svg>') no-repeat center / 100% 100%;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><path fill="none" stroke="black" stroke-width="2" d="M0 40 Q 20 10 40 30 T 80 20 T 100 45"/></svg>') no-repeat center / 100% 100%;
+            margin-bottom: 10px;
+        }
+
+
+        @media print {
+            .invoice-note, .download-instruction-box { display: none; } /* Hide notes and download button in print */
+            body { background-color: #fff !important; } /* Ensure white background for printing */
+            .invoice-container { box-shadow: none; border: none; padding: 0; }
+        }
+    </style>
+
+    <script>
+        // This small script should remain in the head to prevent Flash of Unstyled Content (FOUC)
+        // Apply theme from localStorage on initial load
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <div id="app" class="min-h-screen flex flex-col">
+
+        <div id="dashboardLayout" class="flex flex-1 flex-col md:flex-row">
+            <aside id="sidebar" class="w-full md:w-64 bg-white dark:bg-gray-800 shadow-lg flex-shrink-0 flex flex-col p-4 md:p-0 md:border-r border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700">
+                    <i class="ph-fill ph-storefront text-green-500 text-3xl"></i>
+                    <div>
+                        <h3 id="vendorNameDisplay" class="font-bold text-lg leading-tight">
+                            <%= typeof vendorName !== 'undefined' ? vendorName : 'Vendor' %>
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">Street Food Vendor</p>
+                    </div>
+                </div>
+                <nav id="sidebar-nav" class="flex-grow p-4 space-y-2">
+                    <a href="#dashboard" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-current="page">
+                        <i class="ph-bold ph-house text-xl"></i>
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    <a href="#marketplace" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-shopping-bag-open text-xl"></i>
+                        <span class="font-medium">Marketplace (Buy Supplies)</span>
+                    </a>
+                    <a href="#groupBuys" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-users-three text-xl"></i>
+                        <span class="font-medium">Group Buys</span>
+                    </a>
+                    <a href="#myOrders" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-receipt text-xl"></i>
+                        <span class="font-medium">My Orders</span>
+                    </a>
+                    <a href="#myProducts" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-package text-xl"></i>
+                        <span class="font-medium">My Street Food Menu</span>
+                    </a>
+                    <a href="#settings" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-gear text-xl"></i>
+                        <span class="font-medium">Settings</span>
+                    </a>
+                </nav>
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <button id="logoutBtn" class="w-full flex items-center gap-3 py-2 px-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-red-800/50 hover:text-red-600 dark:hover:text-red-400 transition-colors" type="button">
+                        <i class="ph-bold ph-sign-out text-xl"></i>
+                        <span class="font-medium">Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <header class="bg-white dark:bg-gray-800 shadow-md flex-shrink-0 z-10">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <button id="menuToggleBtn" class="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-2xl p-2 mr-3" aria-label="Open menu">
+                                <i class="ph-bold ph-list"></i>
+                            </button>
+                            <h1 id="pageTitle" class="text-2xl font-bold">Dashboard</h1>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-4">
+                                <button id="cartBtn" class="relative text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400">
+                                    <i class="ph-bold ph-shopping-cart text-2xl"></i>
+                                    <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                                </button>
+                                <div class="relative">
+                                    <button id="profileMenuBtn" class="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400">
+                                        <img class="w-8 h-8 rounded-full object-cover" src="https://via.placeholder.com/150/4CAF50/FFFFFF?text=V" alt="Vendor Avatar">
+                                        <span class="font-medium hidden md:block" id="profileDisplayName"><%= typeof vendorName !== 'undefined' ? vendorName : 'Vendor' %></span>
+                                        <i class="ph-bold ph-caret-down text-sm"></i>
+                                    </button>
+                                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-20 hidden">
+                                        <a href="#profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600" data-target="settings">Your Profile</a>
+                                        <a href="#settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600" data-target="settings">Settings</a>
+                                        <button id="logoutBtnDropdown" class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/50">Sign out</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <main id="mainContent" class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-100 dark:bg-gray-900">
+                    <section id="dashboard" aria-labelledby="dashboard-welcome-heading" class="mb-8 hidden page-content">
+                        <h2 id="dashboard-welcome-heading" class="text-3xl font-bold mb-2">Welcome, <span class="text-green-600" id="dashboardVendorNameDisplay"><%= typeof vendorName !== 'undefined' ? vendorName : 'Vendor' %></span>!</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Here is your comprehensive vendor dashboard overview.</p>
+
+                        <section aria-labelledby="dashboard-stats-heading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 mt-6">
+                            <h3 id="dashboard-stats-heading" class="sr-only">Dashboard Statistics</h3>
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-5 flex flex-col items-center justify-center text-center">
+                                <i class="ph-bold ph-package text-3xl text-green-500 mb-2"></i>
+                                <div class="text-2xl font-bold">54</div>
+                                <div class="text-gray-500 dark:text-gray-400">Items on My Menu</div>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-5 flex flex-col items-center justify-center text-center">
+                                <i class="ph-bold ph-shopping-cart text-3xl text-blue-500 mb-2"></i>
+                                <div class="text-2xl font-bold">34</div>
+                                <div class="text-gray-500 dark:text-gray-400">Customer Orders</div>
+                            </div>
+                            <div class="business-growth-graph-placeholder lg:col-span-2">
+                                <i class="ph-bold ph-chart-line text-3xl text-yellow-500 mb-2"></i>
+                                <div class="growth-line"></div>
+                                <div class="text-lg font-bold">Business Growth Overview</div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm">Revenue trends & performance metrics</div>
+                            </div>
+                        </section>
+
+                        <section aria-labelledby="quick-actions-heading" class="mb-8">
+                            <h3 id="quick-actions-heading" class="text-xl font-semibold mb-4">Quick Actions</h3>
+                            <div class="flex flex-wrap gap-3 md:gap-4">
+                                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="myProducts">
+                                    <i class="ph-bold ph-plus"></i> Add Menu Item
+                                </button>
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="myOrders">
+                                    <i class="ph-bold ph-list"></i> View Orders
+                                </button>
+                                <button class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="marketplace">
+                                    <i class="ph-bold ph-shopping-bag"></i> Buy Supplies
+                                </button>
+                                <button class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="settings">
+                                    <i class="ph-bold ph-gear"></i> Settings
+                                </button>
+                            </div>
+                        </section>
+
+                        <section aria-labelledby="recent-orders-heading" class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6">
+                            <h3 id="recent-orders-heading" class="text-xl font-semibold mb-4">Recent Customer Orders</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order ID</th>
+                                            <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                                            <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                            <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                                            <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                            <th scope="col" class="relative px-3 py-2 md:px-6 md:py-3"><span class="sr-only">Actions</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tr>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">#AM1001</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Priya Sharma</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">2025-07-25</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">₹750.00</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">Pending</span>
+                                                </td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 order-detail-btn" data-order-id="AM1001" type="button">View</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">#AM1002</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Rahul Singh</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">2025-07-24</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">₹1200.00</td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">Completed</span>
+                                                </td>
+                                            <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 order-detail-btn" data-order-id="AM1002" type="button">View</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </section>
+
+                    <section id="myProducts" aria-labelledby="my-products-heading" class="mb-8 hidden page-content">
+                        <h2 id="my-products-heading" class="text-3xl font-bold mb-6">My Street Food Menu</h2>
+                        <div class="mb-6 flex justify-end">
+                            <button id="openAddProductModalBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" type="button">
+                                <i class="ph-bold ph-plus"></i> Add New Menu Item
+                            </button>
+                        </div>
+                        <div id="vendorProductsList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                            </div>
+                    </section>
+
+                    <section id="marketplace" aria-labelledby="marketplace-heading" class="mb-8 hidden page-content">
+                        <h2 id="marketplace-heading" class="text-3xl font-bold mb-6">Marketplace (Buy Supplies)</h2>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">Source fresh ingredients and supplies from wholesalers for your street food business.</p>
+                        <div id="marketplaceProductsList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                            </div>
+                    </section>
+
+                    <section id="groupBuys" aria-labelledby="group-buys-heading" class="mb-8 hidden page-content">
+                        <h2 id="group-buys-heading" class="text-3xl font-bold mb-6">Group Buys</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Participate in group buys to get better deals on bulk purchases for your supplies.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 mt-6">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                                <h3 class="text-lg font-semibold mb-2">Bulk Wheat Grain (100kg target)</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mb-3">Current progress: <span class="font-bold text-blue-600">60%</span></p>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 60%"></div>
+                                </div>
+                                <p class="text-sm text-gray-700 dark:text-gray-300 mt-3 mb-3">Target Price: ₹25/kg (vs. regular ₹30/kg)</p>
+                                <button class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm group-buy-btn" type="button">Join Group Buy</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="myOrders" aria-labelledby="my-orders-heading" class="mb-8 hidden page-content">
+                        <h2 id="my-orders-heading" class="text-3xl font-bold mb-6">My Orders</h2>
+
+                        <h3 class="text-xl font-semibold mb-4">Past Supply Orders (Procurement)</h3>
+                        <div id="pastSupplyOrdersList" class="space-y-4">
+                            </div>
+
+                        <h3 class="text-xl font-semibold mt-8 mb-4">Past Customer Orders (Sales)</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order ID</th>
+                                        <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                                        <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                        <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                                        <th scope="col" class="px-3 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="relative px-3 py-2 md:px-6 md:py-3"><span class="sr-only">Actions</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">#AMV001</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Priya Sharma</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">2025-07-25</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">₹450.00</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-100">Shipped</span>
+                                            </td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 order-detail-btn" data-order-id="AMV001" type="button">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">#AMV002</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Arjun Reddy</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">2025-07-24</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">₹890.00</td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">Delivered</span>
+                                            </td>
+                                        <td class="px-3 py-2 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 order-detail-btn" data-order-id="AMV002" type="button">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                     <section id="settings" aria-labelledby="settings-heading" class="mb-8 hidden page-content">
+                        <h2 id="settings-heading" class="text-3xl font-bold mb-6">Settings</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Manage your account and notification preferences.</p>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 mt-6">
+                            <h3 class="text-xl font-semibold mb-4">Profile Information</h3>
+                            <form id="profileForm" class="space-y-4">
+                                <div>
+                                    <label for="vendorNameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vendor Name</label>
+                                    <input type="text" id="vendorNameInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="">
+                                </div>
+                                <div>
+                                    <label for="vendorEmailInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                                    <input type="email" id="vendorEmailInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="">
+                                </div>
+                                <div>
+                                    <label for="vendorPhoneInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                                    <input type="tel" id="vendorPhoneInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="">
+                                </div>
+                                <div>
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                </main>
+            </div>
+        </div>
+
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitleActual" aria-describedby="modalDescription">
+            <div id="modalContent" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[90vh] flex flex-col transform transition-all">
+                </div>
+        </div>
+
+        <div id="profileSetupModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
+                <h2 class="text-2xl font-bold text-center mb-4">Complete Your Profile</h2>
+                <p class="text-gray-600 dark:text-gray-300 text-center mb-6">Please provide your basic business details to get started with your dashboard.</p>
+                <form id="initialProfileSetupForm" class="space-y-4">
+                    <div>
+                        <label for="setupVendorName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vendor Name</label>
+                        <input type="text" id="setupVendorName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div>
+                        <label for="setupVendorEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                        <input type="email" id="setupVendorEmail" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div>
+                        <label for="setupVendorPhone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                        <input type="tel" id="setupVendorPhone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div class="flex justify-center pt-4">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Save Profile & Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="menuOverlay" class="hidden md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+
+    </div>
+
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const sidebar = document.getElementById('sidebar');
+            const menuToggleBtn = document.getElementById('menuToggleBtn');
+            const menuOverlay = document.getElementById('menuOverlay');
+
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = document.getElementById('pageTitle');
+            const profileMenuBtn = document.getElementById('profileMenuBtn');
+            const profileDropdown = document.getElementById('profileDropdown');
+            const logoutBtnDropdown = document.getElementById('logoutBtnDropdown');
+            const logoutBtnSidebar = document.getElementById('logoutBtn');
+            const openAddProductModalBtn = document.getElementById('openAddProductModalBtn');
+            const cartBtn = document.getElementById('cartBtn');
+            const cartCountElement = document.getElementById('cartCount');
+
+            // Profile display elements
+            const vendorNameDisplay = document.getElementById('vendorNameDisplay'); // In sidebar header
+            const profileDisplayName = document.getElementById('profileDisplayName'); // In top right dropdown trigger
+            const dashboardVendorNameDisplay = document.getElementById('dashboardVendorNameDisplay'); // In dashboard welcome message
+            const vendorNameInput = document.getElementById('vendorNameInput'); // In settings form
+            const vendorEmailInput = document.getElementById('vendorEmailInput'); // In settings form
+            const vendorPhoneInput = document.getElementById('vendorPhoneInput'); // In settings form
+
+            // Mandatory profile setup elements
+            const profileSetupModal = document.getElementById('profileSetupModal');
+            const initialProfileSetupForm = document.getElementById('initialProfileSetupForm');
+            const setupVendorName = document.getElementById('setupVendorName');
+            const setupVendorEmail = document.getElementById('setupVendorEmail');
+            const setupVendorPhone = document.getElementById('setupVendorPhone');
+            const dashboardLayout = document.getElementById('dashboardLayout'); // The main layout to lock
+
+
+            // --- User Profile Data (Persisted in localStorage for demo) ---
+            // On load, try to load profile from localStorage. If not found, use defaults.
+            let vendorProfile = JSON.parse(localStorage.getItem('vendorProfile')) || {
+                name: '',
+                email: '',
+                phone: '',
+                isSetupComplete: false
+            };
+
+            // --- ALL PLATFORM ORDERS (Shared between Vendor & Wholesaler Dashboards) ---
+            // This is the array that will hold orders placed by vendors, visible to wholesalers
+            let allPlatformOrders = JSON.parse(localStorage.getItem('allPlatformOrders')) || [];
+
+
+            // Function to update all display elements with current profile data
+            const updateProfileDisplay = () => {
+                const displayName = vendorProfile.name || 'Vendor';
+                vendorNameDisplay.textContent = displayName;
+                profileDisplayName.textContent = displayName;
+                dashboardVendorNameDisplay.textContent = displayName;
+                // Prefill settings form inputs
+                vendorNameInput.value = vendorProfile.name;
+                vendorEmailInput.value = vendorProfile.email;
+                vendorPhoneInput.value = vendorProfile.phone;
+            };
+
+            // Function to toggle dashboard locked state
+            const toggleDashboardLock = (lock) => {
+                if (lock) {
+                    dashboardLayout.classList.add('dashboard-locked');
+                } else {
+                    dashboardLayout.classList.remove('dashboard-locked');
+                }
+            };
+
+            // --- Initial Setup Check & Modal Display ---
+            const checkInitialSetup = () => {
+                if (!vendorProfile.isSetupComplete) {
+                    profileSetupModal.classList.remove('hidden');
+                    profileSetupModal.classList.add('flex');
+                    toggleDashboardLock(true); // Lock the rest of the dashboard
+                    // Prefill setup form if any data already exists (e.g., from a partial previous attempt)
+                    setupVendorName.value = vendorProfile.name;
+                    setupVendorEmail.value = vendorProfile.email;
+                    setupVendorPhone.value = vendorProfile.phone;
+                } else {
+                    profileSetupModal.classList.add('hidden'); // Ensure hidden
+                    profileSetupModal.classList.remove('flex');
+                    toggleDashboardLock(false); // Unlock dashboard
+                    updateProfileDisplay(); // Update display with loaded profile
+                }
+            };
+
+            // Handle initial profile setup form submission
+            initialProfileSetupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Basic validation (browser's 'required' attribute handles most)
+                if (!setupVendorName.value || !setupVendorEmail.value || !setupVendorPhone.value) {
+                    alert('Please fill in all required profile fields.');
+                    return;
+                }
+
+                vendorProfile.name = setupVendorName.value;
+                vendorProfile.email = setupVendorEmail.value;
+                vendorProfile.phone = setupVendorPhone.value;
+                vendorProfile.isSetupComplete = true;
+
+                localStorage.setItem('vendorProfile', JSON.stringify(vendorProfile)); // Save to local storage
+                updateProfileDisplay(); // Update display elements
+                toggleDashboardLock(false); // Unlock dashboard
+                profileSetupModal.classList.add('hidden'); // Hide modal
+                profileSetupModal.classList.remove('flex');
+
+                alert('Profile setup complete! Welcome to your dashboard.');
+                console.log('Initial profile setup complete:', vendorProfile);
+                activatePage('dashboard'); // Redirect to dashboard
+            });
+
+            // --- Mobile Sidebar Toggle ---
+            menuToggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                menuOverlay.classList.toggle('hidden');
+            });
+
+            menuOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                menuOverlay.classList.add('hidden');
+            });
+
+            // Close sidebar when a navigation link is clicked (on mobile)
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 768) { // Only close on mobile views
+                        sidebar.classList.remove('open');
+                        menuOverlay.classList.add('hidden');
+                    }
+                });
+            });
+
+            // --- Central Page Activation Function ---
+            const activatePage = (targetId) => {
+                // If profile setup is not complete, prevent navigation.
+                // The lock class on dashboardLayout already handles most of this,
+                // but this is a final programmatic check.
+                if (!vendorProfile.isSetupComplete) {
+                    console.log('Profile setup not complete. Navigation blocked.');
+                    checkInitialSetup(); // Ensure setup modal is visible
+                    return;
+                }
+
+                history.pushState(null, '', `#${targetId}`);
+
+                sidebarLinks.forEach(item => item.classList.remove('active'));
+                document.querySelectorAll('.quick-action-link, .quick-action-btn').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+
+                // Find and add active class to the corresponding sidebar link
+                const targetLink = document.querySelector(`.sidebar-link[href="#${targetId}"]`);
+                if (targetLink) {
+                    targetLink.classList.add('active');
+                    pageTitle.textContent = targetLink.querySelector('span').textContent;
+                } else {
+                    const targetSectionHeading = document.getElementById(targetId)?.querySelector('h2, h3');
+                    if (targetSectionHeading) {
+                         pageTitle.textContent = targetSectionHeading.textContent;
+                    } else {
+                         pageTitle.textContent = 'Page Not Found';
+                    }
+                }
+
+                pageContents.forEach(section => section.classList.add('hidden'));
+
+                const targetPage = document.getElementById(targetId);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                }
+
+                // Call specific render functions for dynamic content when entering a section
+                if (targetId === 'myProducts') {
+                    renderVendorProducts();
+                } else if (targetId === 'marketplace') {
+                    renderMarketplaceProducts();
+                } else if (targetId === 'myOrders') {
+                    renderPastSupplyOrders();
+                } else if (targetId === 'settings') {
+                    // Ensure settings form is pre-filled when navigating to it
+                    vendorNameInput.value = vendorProfile.name;
+                    vendorEmailInput.value = vendorProfile.email;
+                    vendorPhoneInput.value = vendorProfile.phone;
+                }
+                console.log(`Mapsd to: ${targetId} at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`);
+            };
+
+            // --- Event Listeners for Navigation ---
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    activatePage(targetId);
+                });
+            });
+
+            document.querySelectorAll('.quick-action-btn, .quick-action-link').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = button.dataset.target;
+                    activatePage(targetId);
+                });
+            });
+
+            window.addEventListener('popstate', () => {
+                const hash = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+                activatePage(hash);
+            });
+
+            // --- Header & Profile Dropdown ---
+            profileMenuBtn.addEventListener('click', () => {
+                const isExpanded = profileMenuBtn.getAttribute('aria-expanded') === 'true';
+                profileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+                profileDropdown.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!profileMenuBtn.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.add('hidden');
+                    profileMenuBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // --- Logout Functionality ---
+            const handleLogout = () => {
+                if (confirm('Are you sure you want to log out?')) {
+                    alert('Logging out...');
+                    localStorage.removeItem('vendorProfile'); // Clear profile
+                    localStorage.removeItem('vendorShoppingCart'); // Clear cart
+                    // Note: allPlatformOrders is NOT cleared here as it's shared with wholesaler
+
+                    // Reset to initial state for demo
+                    vendorProfile = { name: '', email: '', phone: '', isSetupComplete: false };
+                    vendorShoppingCart = [];
+                    
+                    updateProfileDisplay();
+                    updateCartCount(); // Reset cart count to 0
+                    
+                    // For a live site, this would be: window.location.href = '/login';
+                    location.reload(); // Reload the page to simulate returning to a fresh login state
+                    console.log('User logged out at', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+                }
+            };
+            logoutBtnDropdown.addEventListener('click', handleLogout);
+            logoutBtnSidebar.addEventListener('click', handleLogout);
+
+            // --- My Orders Section Buttons (Simulated Customer Orders) ---
+            document.querySelector('#myOrders').addEventListener('click', (event) => {
+                if (event.target.classList.contains('order-detail-btn')) {
+                    const orderId = event.target.dataset.orderId;
+                    alert(`Viewing details for Customer Order ID: ${orderId}. (This would open a detailed order view in a real system.)`);
+                    console.log(`Customer Order details requested for ${orderId} at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`);
+                }
+            });
+
+            // --- Group Buy Buttons (Simulated) ---
+            document.querySelector('#groupBuys').addEventListener('click', (event) => {
+                if (event.target.classList.contains('group-buy-btn')) {
+                    alert('Joining group buy! (This would initiate a purchase flow for the group buy item.)');
+                    console.log('Attempting to join a group buy at', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+                }
+            });
+
+            // --- Settings/Profile Form (Save Changes) ---
+            document.getElementById('profileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Update vendorProfile object
+                vendorProfile.name = vendorNameInput.value;
+                vendorProfile.email = vendorEmailInput.value;
+                vendorProfile.phone = vendorPhoneInput.value;
+                vendorProfile.isSetupComplete = true; // Ensure it's marked complete
+
+                localStorage.setItem('vendorProfile', JSON.stringify(vendorProfile)); // Save to local storage
+                updateProfileDisplay(); // Update all display elements
+                alert('Profile changes saved successfully!');
+                console.log('Profile form submitted and saved at', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), vendorProfile);
+            });
+
+
+            // --- Universal Modal Management ---
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modalContent');
+
+            const openUniversalModal = (title, contentHTML, formId = null, onSubmitCallback = null) => {
+                modalContent.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 p-4">
+                        <h3 id="modalTitleActual" class="text-xl font-bold">${title}</h3>
+                        <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Close modal" type="button">
+                            <i class="ph-bold ph-x text-2xl"></i>
+                        </button>
+                    </div>
+                    <div id="modalDescription" class="p-6 overflow-y-auto flex-grow">
+                        ${contentHTML}
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                document.getElementById('closeModalBtn').addEventListener('click', closeUniversalModal);
+
+                const cancelButton = modalContent.querySelector('#cancelModalBtn');
+                if (cancelButton) {
+                    cancelButton.addEventListener('click', closeUniversalModal);
+                }
+
+                if (formId && onSubmitCallback) {
+                    const formElement = document.getElementById(formId);
+                    if (formElement) {
+                        const oldSubmitHandler = formElement._submitHandler;
+                        if (oldSubmitHandler) {
+                            formElement.removeEventListener('submit', oldSubmitHandler);
+                        }
+                        const newSubmitHandler = (e) => {
+                            e.preventDefault();
+                            onSubmitCallback(e);
+                        };
+                        formElement.addEventListener('submit', newSubmitHandler);
+                        formElement._submitHandler = newSubmitHandler;
+                    }
+                }
+            };
+
+            const closeUniversalModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modalContent.innerHTML = '';
+            };
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeUniversalModal();
+                }
+            });
+
+
+            // --- PRODUCT DATA (My Street Food Menu - Vendor's Own Items) ---
+            let vendorProducts = [
+                { id: 1, name: 'Phuchka (Gol Gappa)', description: 'Crispy hollow puri filled with spiced potato and tangy water.', price: 30, unit: 'plate', image: 'https://via.placeholder.com/150/FF6347/FFFFFF?text=Phuchka' },
+                { id: 2, name: 'Churmur', description: 'Crushed phuchkas mixed with potatoes, chickpeas, spices, and tamarind pulp.', price: 40, unit: 'plate', image: 'https://via.placeholder.com/150/FFD700/000000?text=Churmur' },
+                { id: 3, name: 'Jhalmuri', description: 'Puffed rice mixed with various spices, vegetables, and mustard oil.', price: 35, unit: 'serving', image: 'https://via.placeholder.com/150/8A2BE2/FFFFFF?text=Jhalmuri' },
+                { id: 4, name: 'Aloo Kabli', description: 'Boiled potatoes mixed with tamarind, onions, chilies, and spices.', price: 45, unit: 'plate', image: 'https://via.placeholder.com/150/32CD32/FFFFFF?text=Aloo+Kabli' },
+                { id: 5, name: 'Ghugni', description: 'Spicy white pea curry, often served with onions and coriander.', price: 50, unit: 'bowl', image: 'https://via.placeholder.com/150/4682B4/FFFFFF?text=Ghugni' },
+                { id: 6, name: 'Egg Roll', description: 'Flaky paratha wrapped around a spiced egg and vegetable filling.', price: 60, unit: 'roll', image: 'https://via.placeholder.com/150/FFA500/FFFFFF?text=Egg+Roll' },
+                { id: 7, name: 'Chicken Kathi Roll', description: 'Skewered chicken wrapped in a paratha with onions and sauces.', price: 80, unit: 'roll', image: 'https://via.placeholder.com/150/DC143C/FFFFFF?text=Chicken+Kathi+Roll' },
+                { id: 8, name: 'Steamed Veg Momo', description: 'Tibetan dumplings filled with vegetables, served with spicy sauce.', price: 70, unit: 'plate', image: 'https://via.placeholder.com/150/6A5ACD/FFFFFF?text=Veg+Momo' },
+                { id: 9, name: 'Veg Chow Mein', description: 'Stir-fried noodles with vegetables and sauces.', price: 75, unit: 'plate', image: 'https://via.placeholder.com/150/CD853F/FFFFFF?text=Veg+Chow+Mein' },
+                { id: 10, name: 'Kolkata Fish Fry', description: 'Battered and deep-fried fish fillets, often served with a sprinkle of chaat masala.', price: 90, unit: 'piece', image: 'https://via.placeholder.com/150/008B8B/FFFFFF?text=Fish+Fry' },
+                { id: 11, name: 'Veg Cutlet', description: 'Spiced mashed vegetable patties, often breaded and fried.', price: 40, unit: 'piece', image: 'https://via.placeholder.com/150/556B2F/FFFFFF?text=Veg+Cutlet' },
+                { id: 12, name: 'Pav Bhaji', description: 'Spicy mashed vegetable curry served with buttered bread rolls.', price: 85, unit: 'plate', image: 'https://via.placeholder.com/150/A52A2A/FFFFFF?text=Pav+Bhaji' },
+                { id: 13, name: 'Singara (Samosa)', description: 'Deep-fried pastry with a savory potato and vegetable filling.', price: 20, unit: 'piece', image: 'https://via.placeholder.com/150/B8860B/FFFFFF?text=Singara' },
+                { id: 14, name: 'Telebhaja (Mixed Fritters)', description: 'Various vegetables (like onion, potato, eggplant) coated in batter and deep-fried.', price: 25, unit: 'piece', image: 'https://via.placeholder.com/150/8B4513/FFFFFF?text=Telebhaja' },
+                { id: 15, name: 'Sweet Lassi', description: 'Sweetened yogurt-based drink, a refreshing classic.', price: 50, unit: 'glass', image: 'https://via.placeholder.com/150/87CEEB/000000?text=Sweet+Lassi' },
+                { id: 16, name: 'Mishti Doi', description: 'Sweetened thick yogurt dessert, a Bengali delicacy.', price: 40, unit: 'cup', image: 'https://via.placeholder.com/150/FF69B4/FFFFFF?text=Mishti+Doi' },
+                { id: 17, name: 'Rosogulla', description: 'Spongy cheese balls soaked in light sugar syrup.', price: 30, unit: 'piece', image: 'https://via.placeholder.com/150/ADD8E6/000000?text=Rosogulla' },
+                { id: 18, name: 'Sandesh', description: 'Soft, melt-in-your-mouth Bengali sweet made from fresh paneer.', price: 35, unit: 'piece', image: 'https://via.placeholder.com/150/F0E68C/000000?text=Sandesh' },
+                { id: 19, name: 'Pantua', description: 'Deep-fried milk solids soaked in a rich sugar syrup.', price: 40, unit: 'piece', image: 'https://via.placeholder.com/150/CD5C5C/FFFFFF?text=Pantua' },
+                { id: 20, name: 'Nimki', description: 'Crispy, savory fried snacks, perfect with tea.', price: 25, unit: 'pack', image: 'https://via.placeholder.com/150/D2B48C/000000?text=Nimki' },
+                { id: 21, name: 'Dimer Devil (Egg Devil)', description: 'Spiced boiled egg covered in a minced meat or potato mixture, then fried.', price: 65, unit: 'piece', image: 'https://via.placeholder.com/150/DAA520/FFFFFF?text=Dimer+Devil' },
+                { id: 22, name: 'Mughlai Paratha', description: 'Rich, stuffed paratha with minced meat/egg and spices.', price: 95, unit: 'plate', image: 'https://via.placeholder.com/150/BC8F8F/FFFFFF?text=Mughlai+Paratha' },
+                { id: 23, name: 'Beetroot Chop', description: 'Crispy fried patties with spiced beetroot filling.', price: 45, unit: 'piece', image: 'https://via.placeholder.com/150/C71585/FFFFFF?text=Beetroot+Chop' },
+                { id: 24, name: 'Peyaji (Onion Fritters)', description: 'Crispy deep-fried onion fritters.', price: 30, unit: 'plate', image: 'https://via.placeholder.com/150/FF4500/FFFFFF?text=Peyaji' },
+                { id: 25, name: 'Puri Sabji', description: 'Fluffy fried bread served with a spiced potato curry.', price: 60, unit: 'plate', image: 'https://via.placeholder.com/150/F4A460/000000?text=Puri+Sabji' },
+                { id: 26, name: 'Radhaballavi with Aloo Dum', description: 'Lentil-stuffed puri served with spicy potato curry.', price: 80, unit: 'plate', image: 'https://via.placeholder.com/150/8B0000/FFFFFF?text=Radhaballavi+Aloo+Dum' },
+                { id: 27, name: 'Fried Chicken Momo', description: 'Crispy fried chicken dumplings.', price: 85, unit: 'plate', image: 'https://via.placeholder.com/150/A0522D/FFFFFF?text=Fried+Chicken+Momo' },
+                { id: 28, name: 'Veg Chop', description: 'Mixed vegetable cutlet, fried to perfection.', price: 40, unit: 'piece', image: 'https://via.placeholder.com/150/3CB371/FFFFFF?text=Veg+Chop' },
+                { id: 29, name: 'Paneer Roll', description: 'Spiced paneer filling wrapped in a flaky paratha.', price: 70, unit: 'roll', image: 'https://via.placeholder.com/150/E6E6FA/000000?text=Paneer+Roll' },
+                { id: 30, name: 'Pan-fried Veg Momo', description: 'Pan-fried vegetable dumplings with a crispy base.', price: 75, unit: 'plate', image: 'https://via.placeholder.com/150/7B68EE/FFFFFF?text=Pan+Fried+Veg+Momo' },
+                { id: 31, name: 'Chicken Chow Mein', description: 'Classic stir-fried noodles with chicken and veggies.', price: 90, unit: 'plate', image: 'https://via.placeholder.com/150/A9A9A9/FFFFFF?text=Chicken+Chow+Mein' },
+                { id: 32, name: 'Lemonade (Shikanji)', description: 'Refreshing sweet and tangy lemon drink.', price: 30, unit: 'glass', image: 'https://via.placeholder.com/150/FFEFD5/000000?text=Lemonade' },
+                { id: 33, name: 'Masala Cold Drink', description: 'Aerated drink mixed with chaat masala and lime.', price: 40, unit: 'glass', image: 'https://via.placeholder.com/150/20B2AA/FFFFFF?text=Masala+Cold+Drink' },
+                { id: 34, name: 'Falooda', description: 'Sweet dessert drink with rose syrup, vermicelli, and ice cream.', price: 100, unit: 'glass', image: 'https://via.placeholder.com/150/FFC0CB/000000?text=Falooda' },
+                { id: 35, name: 'Kulfi', description: 'Traditional Indian frozen dessert, often served on a stick.', price: 60, unit: 'stick', image: 'https://via.placeholder.com/150/B0E0E6/000000?text=Kulfi' },
+                { id: 36, name: 'Malai Chom Chom', description: 'Creamy, spongy sweet with a hint of cardamom.', price: 45, unit: 'piece', image: 'https://via.placeholder.com/150/FFFACD/000000?text=Malai+Chom+Chom' },
+                { id: 37, name: 'Shor Bhaja', description: 'A unique Bengali sweet made from fried milk cream layers.', price: 70, unit: 'piece', image: 'https://via.placeholder.com/150/D2691E/FFFFFF?text=Shor+Bhaja' },
+                { id: 38, name: 'Lobongo Lotika', description: 'Flower-shaped pastry filled with sweetened khoya, sealed with a clove.', price: 50, unit: 'piece', image: 'https://via.placeholder.com/150/F8F8FF/000000?text=Lobongo+Lotika' },
+                { id: 39, name: 'Pati Shapta', description: 'Thin crepes filled with sweetened coconut and jaggery.', price: 40, unit: 'piece', image: 'https://via.placeholder.com/150/FFDB58/000000?text=Pati+Shapta' },
+                { id: 40, name: 'Nolen Gurer Sandesh', description: 'Seasonal sandesh made with date palm jaggery.', price: 50, unit: 'piece', image: 'https://via.placeholder.com/150/8B0000/FFFFFF?text=Nolen+Gurer+Sandesh' },
+                { id: 41, name: 'Gondhoraj Lebu Sharbat', description: 'Fragrant lime juice using special Gondhoraj lime.', price: 35, unit: 'glass', image: 'https://via.placeholder.com/150/ADFF2F/000000?text=Gondhoraj+Sharbat' },
+                { id: 42, name: 'Dab Sharbat (Coconut Water)', description: 'Refreshing natural coconut water.', price: 60, unit: 'glass', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Dab+Sharbat' },
+                { id: 43, name: 'Chicken Roll', description: 'Spiced chicken chunks wrapped in a paratha.', price: 80, unit: 'roll', image: 'https://via.placeholder.com/150/FF6347/FFFFFF?text=Chicken+Roll' },
+                { id: 44, name: 'Paneer Pakora', description: 'Crispy gram flour fritters with soft paneer inside.', price: 50, unit: 'plate', image: 'https://via.placeholder.com/150/F0FFF0/000000?text=Paneer+Pakora' },
+                { id: 45, name: 'Capsicum Pakora', description: 'Capsicum rings dipped in batter and fried.', price: 30, unit: 'plate', image: 'https://via.placeholder.com/150/7CFC00/FFFFFF?text=Capsicum+Pakora' },
+                { id: 46, name: 'Veg Fried Rice', description: 'Classic fried rice with mixed vegetables.', price: 85, unit: 'plate', image: 'https://via.placeholder.com/150/20B2AA/FFFFFF?text=Veg+Fried+Rice' },
+                { id: 47, name: 'Chilli Chicken Dry', description: 'Spicy stir-fried chicken with bell peppers and onions.', price: 120, unit: 'plate', image: 'https://via.placeholder.com/150/B22222/FFFFFF?text=Chilli+Chicken+Dry' },
+                { id: 48, name: 'Garlic Noodles', description: 'Noodles tossed with garlic and soy sauce.', price: 80, unit: 'plate', image: 'https://via.placeholder.com/150/6A5ACD/FFFFFF?text=Garlic+Noodles' },
+                { id: 49, name: 'Soup Sticks', description: 'Crispy fried breadsticks, often served with soup.', price: 20, unit: 'pack', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Soup+Sticks' },
+                { id: 50, 'name': 'Manchow Soup (Veg)', description: 'Spicy and tangy vegetable soup with fried noodles.', price: 60, unit: 'bowl', image: 'https://via.placeholder.com/150/8B4513/FFFFFF?text=Manchow+Soup' },
+                { id: 51, name: 'Hot & Sour Soup (Veg)', description: 'Spicy and sour vegetable soup.', price: 60, unit: 'bowl', image: 'https://via.placeholder.com/150/483D8B/FFFFFF?text=Hot+Sour+Soup' },
+                { id: 52, name: 'Sweet Corn Soup (Veg)', description: 'Mild and creamy sweet corn soup with vegetables.', price: 55, unit: 'bowl', image: 'https://via.placeholder.com/150/FFD700/000000?text=Sweet+Corn+Soup' },
+                { id: 53, name: 'Paneer Chilli', description: 'Paneer cubes tossed in a spicy and tangy sauce with bell peppers.', price: 110, unit: 'plate', image: 'https://via.placeholder.com/150/ADD8E6/000000?text=Paneer+Chilli' },
+                { id: 54, name: 'Gobi Manchurian', description: 'Crispy fried cauliflower florets tossed in a spicy Manchurian sauce.', price: 95, unit: 'plate', image: 'https://via.placeholder.com/150/DC143C/FFFFFF?text=Gobi+Manchurian' },
+            ];
+
+            // --- MARKETPLACE PRODUCTS (Wholesaler Supplies for the Vendor) ---
+            let marketplaceProducts = [
+                { id: 101, name: 'Potatoes', description: 'Bulk supply of fresh, medium-sized potatoes.', basePrice: 25, unit: 'kg', image: 'https://via.placeholder.com/150/FF7F50/FFFFFF?text=Bulk+Potatoes' },
+                { id: 102, name: 'Onions', description: 'Large bag of red onions, essential for street food.', basePrice: 30, unit: 'kg', image: 'https://via.placeholder.com/150/DAA520/FFFFFF?text=Bulk+Onions' },
+                { id: 103, name: 'Tomatoes', description: 'Fresh, ripe tomatoes for chutneys and curries.', basePrice: 40, unit: 'kg', image: 'https://via.placeholder.com/150/B22222/FFFFFF?text=Tomatoes+Crate' },
+                { id: 104, name: 'Puffed Rice', description: 'Large pack of crispy puffed rice for Jhalmuri.', basePrice: 40, unit: 'kg', image: 'https://via.placeholder.com/150/D2B48C/000000?text=Puffed+Rice+Bulk' },
+                { id: 105, name: 'Chickpeas (Dried)', description: 'Dried white chickpeas for Ghugni and chaat.', basePrice: 70, unit: 'kg', image: 'https://via.placeholder.com/150/CD853F/FFFFFF?text=Chickpeas+Bulk' },
+                { id: 106, name: 'Mixed Spices Powder', description: 'Assorted whole and ground spices for various dishes.', basePrice: 500, unit: 'kg', image: 'https://via.placeholder.com/150/8B4513/FFFFFF?text=Bulk+Spices' },
+                { id: 107, name: 'Mustard Oil', description: 'Bulk mustard oil, commonly used in Bengali street food.', basePrice: 160, unit: 'liter', image: 'https://via.placeholder.com/150/FFD700/000000?text=Mustard+Oil+5L' },
+                { id: 108, name: 'Tamarind Pulp', description: 'Concentrated tamarind pulp for tangy chutneys.', basePrice: 150, unit: 'kg', image: 'https://via.placeholder.com/150/800000/FFFFFF?text=Tamarind+Bulk' },
+                { id: 109, name: 'Eggs (Tray)', description: 'Trays of fresh eggs for rolls and other items.', basePrice: 6, unit: 'egg', image: 'https://via.placeholder.com/150/FFEFD5/000000?text=Eggs+Bulk' },
+                { id: 110, name: 'Maida (Refined Flour)', description: 'Large bag of refined flour for parathas and rolls.', basePrice: 45, unit: 'kg', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Maida+Bulk' },
+                { id: 111, name: 'Chicken Breast', description: 'Boneless chicken breast, ideal for rolls and momos.', basePrice: 240, unit: 'kg', image: 'https://via.placeholder.com/150/DC143C/FFFFFF?text=Chicken+Breast+Bulk' },
+                { id: 112, name: 'Momo Wrappers', description: 'Bulk pack of ready-made wrappers.', basePrice: 0.6, unit: 'pc', image: 'https://via.placeholder.com/150/E6E6FA/000000?text=Momo+Wrappers+Bulk' },
+                { id: 113, name: 'Noodles (Dry)', description: 'Bulk noodles for Chow Mein and other noodle dishes.', basePrice: 70, unit: 'kg', image: 'https://via.placeholder.com/150/FFEFD5/000000?text=Noodles+Bulk' },
+                { id: 114, name: 'Bhetki Fish Fillets', description: 'Premium Bhetki fish fillets for fish fry.', basePrice: 350, unit: 'kg', image: 'https://via.placeholder.com/150/4682B4/FFFFFF?text=Bhetki+Fillets' },
+                { id: 115, name: 'Refined Sunflower Oil', description: 'Large jar of cooking oil for deep frying.', basePrice: 150, unit: 'liter', image: 'https://via.placeholder.com/150/FFFF00/000000?text=Sunflower+Oil+Bulk' },
+                { id: 116, name: 'Green Chillies', description: 'Bulk fresh green chillies for spice and flavor.', basePrice: 100, unit: 'kg', image: 'https://via.placeholder.com/150/32CD32/FFFFFF?text=Green+Chillies+Bulk' },
+                { id: 117, name: 'Coriander Leaves', description: 'Fresh coriander for garnishing and chutneys.', basePrice: 20, unit: 'bunch', image: 'https://via.placeholder.com/150/228B22/FFFFFF?text=Coriander+Bunches' },
+                { id: 118, name: 'Garlic', description: 'Bulk garlic for pastes and cooking.', basePrice: 150, unit: 'kg', image: 'https://via.placeholder.com/150/DCDCDC/000000?text=Garlic+Bulk' },
+                { id: 119, name: 'Ginger', description: 'Bulk ginger for pastes and cooking.', basePrice: 120, unit: 'kg', image: 'https://via.placeholder.com/150/F4A460/000000?text=Ginger+Bulk' },
+                { id: 120, name: 'Paneer', description: 'Fresh paneer for rolls and curries.', basePrice: 300, unit: 'kg', image: 'https://via.placeholder.com/150/F0FFF0/000000?text=Paneer+Block' },
+                { id: 121, name: 'Cabbage', description: 'Fresh cabbage for rolls and chow mein.', basePrice: 30, unit: 'kg', image: 'https://via.placeholder.com/150/ADD8E6/000000?text=Cabbage+Bulk' },
+                { id: 122, name: 'Carrots', description: 'Fresh carrots for salads and fillings.', basePrice: 40, unit: 'kg', image: 'https://via.placeholder.com/150/FF8C00/FFFFFF?text=Carrots+Bulk' },
+                { id: 123, name: 'Capsicum', description: 'Green bell peppers for rolls and Chinese dishes.', basePrice: 90, unit: 'kg', image: 'https://via.placeholder.com/150/008000/FFFFFF?text=Capsicum+Bulk' },
+                { id: 124, name: 'Soya Sauce', description: 'Large bottle of dark soya sauce.', basePrice: 120, unit: 'liter', image: 'https://via.placeholder.com/150/8B0000/FFFFFF?text=Soya+Sauce' },
+                { id: 125, name: 'Chilli Sauce', description: 'Spicy red chilli sauce.', basePrice: 110, unit: 'liter', image: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Chilli+Sauce' },
+                { id: 126, name: 'Vinegar', description: 'White vinegar for cooking.', basePrice: 70, unit: 'liter', image: 'https://via.placeholder.com/150/D8BFD8/000000?text=Vinegar' },
+                { id: 127, name: 'Salt', description: 'Common salt for all cooking needs.', basePrice: 20, unit: 'kg', image: 'https://via.placeholder.com/150/FFFFFF/000000?text=Salt+Bulk' },
+                { id: 128, name: 'Sugar', description: 'Granulated sugar for sweets and beverages.', basePrice: 50, unit: 'kg', image: 'https://via.placeholder.com/150/ADD8E6/000000?text=Sugar+Bulk' },
+                { id: 129, name: 'Besan (Gram Flour)', description: 'For pakoras and cheelas.', basePrice: 65, unit: 'kg', image: 'https://via.placeholder.com/150/FFFF00/000000?text=Besan+Bulk' },
+                { id: 130, name: 'Papad (Assorted)', description: 'Crispy fried wafers, often served with meals.', basePrice: 180, unit: 'pack', image: 'https://via.placeholder.com/150/F0E68C/000000?text=Papad+Bulk' },
+                { id: 131, name: 'Disposable Plates', description: 'Eco-friendly disposable plates for serving.', basePrice: 200, unit: 'pack', image: 'https://via.placeholder.com/150/D3D3D3/000000?text=Disposable+Plates' },
+                { id: 132, name: 'Paper Napkins', description: 'Soft paper napkins for customers.', basePrice: 120, unit: 'pack', image: 'https://via.placeholder.com/150/F8F8FF/000000?text=Paper+Napkins' },
+                { id: 133, name: 'Plastic Spoons', description: 'Disposable spoons for gravy items.', basePrice: 70, unit: 'pack', image: 'https://via.placeholder.com/150/B0C4DE/000000?text=Plastic+Spoons' },
+                { id: 134, name: 'Water Bottles (Case)', description: 'Case of bottled drinking water.', basePrice: 300, unit: 'case', image: 'https://via.placeholder.com/150/ADD8E6/000000?text=Water+Bottles' },
+                { id: 135, name: 'Tea Leaves', description: 'High-quality tea leaves for masala chai.', basePrice: 350, unit: 'kg', image: 'https://via.placeholder.com/150/6B8E23/FFFFFF?text=Tea+Leaves' },
+                { id: 136, name: 'Coffee Powder', description: 'Instant coffee powder for beverages.', basePrice: 280, unit: 'pack', image: 'https://via.placeholder.com/150/8B4513/FFFFFF?text=Coffee+Powder' },
+                { id: 137, name: 'Milk Powder', description: 'Full cream milk powder.', basePrice: 400, unit: 'kg', image: 'https://via.placeholder.com/150/FFF8DC/000000?text=Milk+Powder' },
+                { id: 138, name: 'Cumin Seeds', description: 'Whole cumin seeds for tempering.', basePrice: 100, unit: 'kg', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Cumin+Seeds' },
+                { id: 139, name: 'Turmeric Powder', description: 'Ground turmeric for color and flavor.', basePrice: 80, unit: 'kg', image: 'https://via.placeholder.com/150/FFD700/000000?text=Turmeric+Powder' },
+                { id: 140, name: 'Red Chili Powder', description: 'Spicy red chili powder.', basePrice: 90, unit: 'kg', image: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Red+Chili+Powder' },
+                { id: 141, name: 'Coriander Powder', description: 'Ground coriander for curries.', basePrice: 70, unit: 'kg', image: 'https://via.placeholder.com/150/DAA520/FFFFFF?text=Coriander+Powder' },
+                { id: 142, name: 'Garam Masala', description: 'Aromatic blend of ground spices.', basePrice: 150, unit: 'pack', image: 'https://via.placeholder.com/150/B8860B/FFFFFF?text=Garam+Masala' },
+                { id: 143, name: 'Bread Buns', description: 'Soft bread buns for pav bhaji and vada pav.', basePrice: 100, unit: 'pack', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Bread+Buns' },
+                { id: 144, name: 'Green Peas (Frozen)', description: 'Frozen green peas for various dishes.', basePrice: 200, unit: 'kg', image: 'https://via.placeholder.com/150/008000/FFFFFF?text=Green+Peas+Frozen' },
+                { id: 145, name: 'Spinach (Fresh)', description: 'Fresh spinach for healthy additions.', basePrice: 80, unit: 'kg', image: 'https://via.placeholder.com/150/228B22/FFFFFF?text=Spinach+Fresh' },
+                { id: 146, name: 'Coconut (Whole)', description: 'Whole coconuts for fresh chutneys.', basePrice: 30, unit: 'piece', image: 'https://via.placeholder.com/150/D2B48C/000000?text=Coconuts' },
+                { id: 147, name: 'Curry Leaves', description: 'Fresh curry leaves for tempering.', basePrice: 30, unit: 'bunch', image: 'https://via.placeholder.com/150/556B2F/FFFFFF?text=Curry+Leaves' },
+                { id: 148, name: 'Assorted Pickles', description: 'Mixed vegetable pickles to serve with meals.', basePrice: 180, unit: 'jar', image: 'https://via.placeholder.com/150/A52A2A/FFFFFF?text=Assorted+Pickles' },
+                { id: 149, name: 'Sweet Corn (Frozen)', description: 'Frozen sweet corn for soups and fried rice.', basePrice: 220, unit: 'kg', image: 'https://via.placeholder.com/150/FFFF00/000000?text=Sweet+Corn+Frozen' },
+                { id: 150, name: 'Spring Roll Wrappers', description: 'Ready-to-use spring roll wrappers.', basePrice: 150, unit: 'pack', image: 'https://via.placeholder.com/150/F0E68C/000000?text=Spring+Roll+Wrappers' },
+                { id: 151, name: 'Basmati Rice', description: 'Premium long-grain basmati rice.', basePrice: 100, unit: 'kg', image: 'https://via.placeholder.com/150/FFFFFF/000000?text=Basmati+Rice+Bulk' },
+                { id: 152, name: 'Tandoori Chicken Marinade', description: 'Ready-made marinade for tandoori dishes.', basePrice: 200, unit: 'pack', image: 'https://via.placeholder.com/150/DC143C/FFFFFF?text=Tandoori+Marinade' },
+                { id: 153, name: 'Ginger Garlic Paste', description: 'Ready-to-use ginger garlic paste.', basePrice: 100, unit: 'kg', image: 'https://via.placeholder.com/150/808080/FFFFFF?text=Ginger+Garlic+Paste' },
+                { id: 154, name: 'Cumin Powder', description: 'Ground cumin powder.', basePrice: 90, unit: 'kg', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Cumin+Powder' },
+                { id: 155, name: 'Black Pepper Powder', description: 'Fine ground black pepper.', basePrice: 250, unit: 'kg', image: 'https://via.placeholder.com/150/36454F/FFFFFF?text=Black+Pepper+Powder' },
+                { id: 156, name: 'Green Beans (Fresh)', description: 'Fresh green beans for stir-fries and salads.', basePrice: 60, unit: 'kg', image: 'https://via.placeholder.com/150/7CFC00/FFFFFF?text=Green+Beans' },
+                { id: 157, name: 'Mushrooms (Button)', description: 'Fresh button mushrooms.', basePrice: 150, unit: 'pack', image: 'https://via.placeholder.com/150/F5F5DC/000000?text=Mushrooms' },
+                { id: 158, name: 'Cottage Cheese (Paneer)', description: 'Soft and fresh paneer blocks.', basePrice: 300, unit: 'kg', image: 'https://via.placeholder.com/150/F0FFF0/000000?text=Cottage+Cheese' },
+                { id: 159, name: 'Capsicum (Yellow/Red)', description: 'Colored capsicum for enhanced flavor and presentation.', basePrice: 120, unit: 'kg', image: 'https://via.placeholder.com/150/FFD700/000000?text=Yellow+Capsicum' },
+                { id: 160, name: 'Soya Chunks', description: 'Protein-rich soya chunks.', basePrice: 80, unit: 'kg', image: 'https://via.placeholder.com/150/D2B48C/000000?text=Soya+Chunks' },
+                { id: 161, name: 'Green Cardamom', description: 'Aromatic green cardamom pods.', basePrice: 800, unit: 'kg', image: 'https://via.placeholder.com/150/ADFF2F/000000?text=Green+Cardamom' },
+                { id: 162, name: 'Cloves', description: 'Whole cloves for rich flavor.', basePrice: 700, unit: 'kg', image: 'https://via.placeholder.com/150/8B0000/FFFFFF?text=Cloves' },
+                { id: 163, name: 'Cinnamon Sticks', description: 'Fragrant cinnamon sticks.', basePrice: 600, unit: 'kg', image: 'https://via.placeholder.com/150/A0522D/FFFFFF?text=Cinnamon+Sticks' },
+                { id: 164, name: 'Bay Leaves', description: 'Dried bay leaves for aromatic cooking.', basePrice: 120, unit: 'pack', image: 'https://via.placeholder.com/150/6B8E23/FFFFFF?text=Bay+Leaves' },
+                { id: 165, name: 'Star Anise', description: 'Star-shaped spice for unique flavor.', basePrice: 900, unit: 'kg', image: 'https://via.placeholder.com/150/CD5C5C/FFFFFF?text=Star+Anise' },
+                { id: 166, name: 'Mace', description: 'Delicate spice from nutmeg outer covering.', basePrice: 1200, unit: 'kg', image: 'https://via.placeholder.com/150/B8860B/FFFFFF?text=Mace' },
+                { id: 167, name: 'Nutmeg', description: 'Whole nutmeg for grating.', basePrice: 800, unit: 'kg', image: 'https://via.placeholder.com/150/DAA520/FFFFFF?text=Nutmeg' },
+                { id: 168, name: 'White Pepper Powder', description: 'Milder alternative to black pepper.', basePrice: 280, unit: 'kg', image: 'https://via.placeholder.com/150/F5F5DC/000000?text=White+Pepper+Powder' },
+                { id: 169, name: 'Saffron', description: 'Premium saffron strands.', basePrice: 500, unit: 'gram', image: 'https://via.placeholder.com/150/FFD700/000000?text=Saffron' },
+                { id: 170, name: 'Dry Red Chillies', description: 'Whole dry red chilies for heat and flavor.', basePrice: 150, unit: 'kg', image: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Dry+Red+Chillies' },
+                { id: 171, name: 'Asafoetida (Hing)', description: 'Pungent spice for Indian cooking.', basePrice: 300, unit: 'pack', image: 'https://via.placeholder.com/150/D2B48C/000000?text=Asafoetida' },
+                { id: 172, name: 'Dry Mango Powder (Amchur)', description: 'Tangy powder for chaats and curries.', basePrice: 200, unit: 'kg', image: 'https://via.placeholder.com/150/FFD700/000000?text=Amchur' },
+                { id: 173, name: 'Black Salt', description: 'Pungent black salt for chaats and drinks.', basePrice: 50, unit: 'kg', image: 'https://via.placeholder.com/150/808080/FFFFFF?text=Black+Salt' },
+                { id: 174, name: 'Rock Salt (Sendha Namak)', description: 'Coarse rock salt for specific dishes and fasting.', basePrice: 60, unit: 'kg', image: 'https://via.placeholder.com/150/DCDCDC/000000?text=Rock+Salt' },
+                { id: 175, name: 'Baking Soda', description: 'For leavening in various street foods.', basePrice: 80, unit: 'kg', image: 'https://via.placeholder.com/150/F8F8FF/000000?text=Baking+Soda' },
+                { id: 176, name: 'Baking Powder', description: 'For softer textures in fried items.', basePrice: 100, unit: 'kg', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Baking+Powder' },
+                { id: 177, name: 'Active Dry Yeast', description: 'For fermentation in some bread items.', basePrice: 200, unit: 'pack', image: 'https://via.placeholder.com/150/FFA500/FFFFFF?text=Dry+Yeast' },
+                { id: 178, name: 'Food Colors (Assorted)', description: 'For vibrant street food presentation.', basePrice: 300, unit: 'set', image: 'https://via.placeholder.com/150/FF0000/00FF00?text=Food+Colors' },
+                { id: 179, name: 'White Vinegar (Industrial)', description: 'Bulk vinegar for pickling and cleaning.', basePrice: 50, unit: 'liter', image: 'https://via.placeholder.com/150/D8BFD8/000000?text=White+Vinegar' },
+                { id: 180, name: 'Cooking Soda (Sodium Bicarbonate)', description: 'Food-grade sodium bicarbonate.', basePrice: 70, unit: 'kg', image: 'https://via.placeholder.com/150/F8F8FF/000000?text=Cooking+Soda' },
+                { id: 181, name: 'Soy Sauce (Dark)', description: 'Rich, dark soy sauce for Asian street food.', basePrice: 120, unit: 'liter', image: 'https://via.placeholder.com/150/8B0000/FFFFFF?text=Dark+Soy+Sauce' },
+                { id: 182, name: 'Green Chilli Sauce', description: 'Spicy green chilli sauce for rolls and chowmein.', basePrice: 110, unit: 'liter', image: 'https://via.placeholder.com/150/32CD32/FFFFFF?text=Green+Chilli+Sauce' },
+                { id: 183, name: 'Red Chilli Sauce', description: 'Vibrant red chilli sauce.', basePrice: 100, unit: 'liter', image: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Red+Chilli+Sauce' },
+                { id: 184, name: 'Tomato Ketchup (Bulk)', description: 'Large pack of tomato ketchup.', basePrice: 180, unit: 'kg', image: 'https://via.placeholder.com/150/B22222/FFFFFF?text=Tomato+Ketchup' },
+                { id: 185, name: 'Mayonnaise (Bulk)', description: 'Creamy mayonnaise for wraps and burgers.', basePrice: 250, unit: 'kg', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Mayonnaise' },
+                { id: 186, name: 'Burger Buns', description: 'Soft burger buns for vada pav and burgers.', basePrice: 80, unit: 'pack', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Burger+Buns' },
+                { id: 187, name: 'Sausages (Chicken)', description: 'Chicken sausages for hot dogs and rolls.', basePrice: 350, unit: 'kg', image: 'https://via.placeholder.com/150/FFA500/FFFFFF?text=Chicken+Sausages' },
+                { id: 188, name: 'Hot Dog Buns', description: 'Special buns for hot dogs.', basePrice: 90, unit: 'pack', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Hot+Dog+Buns' },
+                { id: 189, name: 'Cheese Slices', description: 'Processed cheese slices for burgers and sandwiches.', basePrice: 200, unit: 'pack', image: 'https://via.placeholder.com/150/FFFF00/000000?text=Cheese+Slices' },
+                { id: 190, name: 'Butter (Bulk)', description: 'Large block of butter for pav bhaji and parathas.', basePrice: 450, unit: 'kg', image: 'https://via.placeholder.com/150/F0E68C/000000?text=Butter+Bulk' },
+                { id: 191, name: 'Cooking Oil (Palm/Soybean)', description: 'Economical cooking oil for deep frying.', basePrice: 120, unit: 'liter', image: 'https://via.placeholder.com/150/ADD8E6/000000?text=Cooking+Oil' },
+                { id: 192, name: 'Dried Fenugreek Leaves (Kasuri Methi)', description: 'Aromatic dried fenugreek leaves for curries.', basePrice: 150, unit: 'pack', image: 'https://via.placeholder.com/150/6B8E23/FFFFFF?text=Kasuri+Methi' },
+                { id: 193, name: 'Black Cardamom', description: 'Large, smoky black cardamom pods.', basePrice: 700, unit: 'kg', image: 'https://via.placeholder.com/150/36454F/FFFFFF?text=Black+Cardamom' },
+                { id: 194, name: 'White Sesame Seeds', description: 'For garnishing and cooking.', basePrice: 200, unit: 'kg', image: 'https://via.placeholder.com/150/F8F8FF/000000?text=White+Sesame' },
+                { id: 195, name: 'Coriander Seeds', description: 'Whole coriander seeds.', basePrice: 80, unit: 'kg', image: 'https://via.placeholder.com/150/DAA520/FFFFFF?text=Coriander+Seeds' },
+                { id: 196, name: 'Fennel Seeds (Saunf)', description: 'Aromatic fennel seeds.', basePrice: 120, unit: 'kg', image: 'https://via.placeholder.com/150/7CFC00/FFFFFF?text=Fennel+Seeds' },
+                { id: 197, name: 'Mustard Seeds', description: 'Small mustard seeds for tempering.', basePrice: 90, unit: 'kg', image: 'https://via.placeholder.com/150/FFD700/000000?text=Mustard+Seeds' },
+                { id: 198, name: 'Whole Wheat Flour (Atta)', description: 'For healthier rotis and parathas.', basePrice: 40, unit: 'kg', image: 'https://via.placeholder.com/150/D2B48C/000000?text=Whole+Wheat+Flour' },
+                { id: 199, name: 'Rice Flour', description: 'For crispy coatings and batters.', basePrice: 50, unit: 'kg', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Rice+Flour' },
+                { id: 200, name: 'Semolina (Rava/Suji)', description: 'For upma and other preparations.', basePrice: 55, unit: 'kg', image: 'https://via.placeholder.com/150/F0E68C/000000?text=Semolina' },
+                { id: 201, name: 'Dry Fruits Mix', description: 'Assorted dry fruits for sweets and garnishing.', basePrice: 500, unit: 'pack', image: 'https://via.placeholder.com/150/CD853F/FFFFFF?text=Dry+Fruits+Mix' },
+                { id: 202, name: 'Pistachios', description: 'Premium pistachios for sweets.', basePrice: 800, unit: 'kg', image: 'https://via.placeholder.com/150/ADFF2F/000000?text=Pistachios' },
+                { id: 203, name: 'Almonds', description: 'Whole almonds for sweets and garnishing.', basePrice: 700, unit: 'kg', image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Almonds' },
+            ];
+
+            // Helper function to get price based on quantity and tiered pricing
+            const getTieredPrice = (product, quantity) => {
+                let effectivePrice = product.basePrice;
+                // Apply discounts based on quantity
+                if (quantity >= 10) {
+                    effectivePrice = product.basePrice * 0.92; // 8% discount
+                } else if (quantity >= 5) {
+                    effectivePrice = product.basePrice * 0.97; // 3% discount
+                }
+                return effectivePrice;
+            };
+
+            // --- VENDOR SHOPPING CART (for supplies from Marketplace) ---
+            // Load cart and past orders from localStorage or initialize empty
+            let vendorShoppingCart = JSON.parse(localStorage.getItem('vendorShoppingCart')) || [];
+            // allPlatformOrders is the shared storage for orders, including those placed by THIS vendor
+            let pastSupplyOrders = allPlatformOrders.filter(order => order.vendorInfo && order.vendorInfo.email === vendorProfile.email);
+
+
+            // Save cart and orders to localStorage (vendor-specific and allPlatformOrders)
+            const saveVendorData = () => {
+                localStorage.setItem('vendorShoppingCart', JSON.stringify(vendorShoppingCart));
+                localStorage.setItem('allPlatformOrders', JSON.stringify(allPlatformOrders)); // Save global orders
+                localStorage.setItem('vendorProfile', JSON.stringify(vendorProfile)); // Ensure profile is saved with other data
+            };
+
+
+            const updateCartCount = () => {
+                const totalItems = vendorShoppingCart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCountElement.textContent = totalItems;
+                // Show/hide badge based on items in cart
+                if (totalItems > 0) {
+                    cartCountElement.classList.remove('hidden');
+                } else {
+                    cartCountElement.classList.add('hidden');
+                }
+            };
+            updateCartCount(); // Call on load to set initial count (should be 0)
+
+
+            // --- Functions to Render Product Lists ---
+            const renderVendorProducts = () => {
+                const productListDiv = document.getElementById('vendorProductsList');
+                if (!productListDiv) return;
+
+                productListDiv.innerHTML = ''; // Clear existing products
+
+                if (vendorProducts.length === 0) {
+                    productListDiv.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No menu items added yet. Click "Add New Menu Item" to get started!</p>';
+                    return;
+                }
+
+                vendorProducts.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col items-center text-center';
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md mb-3">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">${product.name}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">${product.description}</p>
+                        <p class="text-green-600 dark:text-green-400 font-bold text-xl mb-3">₹${product.price}/${product.unit}</p>
+                        <div class="flex gap-2">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded-lg transition-colors edit-product-btn" data-id="${product.id}" type="button">Edit</button>
+                            <button class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-lg transition-colors delete-product-btn" data-id="${product.id}" type="button">Delete</button>
+                        </div>
+                    `;
+                    productListDiv.appendChild(productCard);
+                });
+
+                // Attach event listeners for dynamically created buttons (using event delegation on parent)
+                if (!productListDiv.dataset.listenersAttached) { // Prevent attaching multiple times
+                    productListDiv.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('edit-product-btn')) {
+                            const productId = parseInt(e.target.dataset.id);
+                            const productToEdit = vendorProducts.find(p => p.id === productId);
+                            if (productToEdit) {
+                                openAddEditProductModal(productToEdit); // Open modal in edit mode
+                            }
+                        } else if (e.target.classList.contains('delete-product-btn')) {
+                            const productId = parseInt(e.target.dataset.id);
+                            const productName = vendorProducts.find(p => p.id === productId)?.name || 'this item';
+                            if (confirm(`Are you sure you want to delete "${productName}" from your menu? This action cannot be undone.`)) {
+                                vendorProducts = vendorProducts.filter(p => p.id !== productId);
+                                saveVendorData(); // Save changes after delete
+                                renderVendorProducts(); // Re-render to show updated list
+                                alert(`${productName} deleted successfully.`);
+                                console.log(`Product with ID: ${productId} deleted at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}.`);
+                            }
+                        }
+                    });
+                    productListDiv.dataset.listenersAttached = 'true';
+                }
+            };
+
+            const renderMarketplaceProducts = () => {
+                const marketplaceListDiv = document.getElementById('marketplaceProductsList');
+                if (!marketplaceListDiv) return;
+
+                marketplaceListDiv.innerHTML = ''; // Clear existing products
+
+                // Placeholder for products if Wholesaler has not listed any yet
+                const wholesalerProducts = JSON.parse(localStorage.getItem('wholesalerProducts')) || [];
+                if (wholesalerProducts.length === 0) {
+                    marketplaceListDiv.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No supplies available in the marketplace yet. Please check back later!</p>';
+                    return;
+                }
+
+                wholesalerProducts.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4';
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-40 object-cover rounded-md mb-4">
+                        <h3 class="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-100">${product.name}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">${product.description}</p>
+                        <p class="text-green-600 dark:text-green-400 font-bold text-xl">₹${product.basePrice.toFixed(2)}/${product.unit}</p>
+                        <div class="text-gray-500 dark:text-gray-400 text-xs mb-2">
+                            ${(product.unit === 'kg' || product.unit === 'liter' || product.unit === 'pack' || product.unit === 'case' || product.unit === 'pc' || product.unit === 'bunch' || product.unit === 'tray' || product.unit === 'gram') && product.basePrice > 1 ? `
+                                <p>5-${9} ${product.unit}s: 3% off</p>
+                                <p>10+ ${product.unit}s: 8% off</p>
+                            ` : ''}
+                        </div>
+                        <div class="flex justify-end items-center mt-3">
+                            <button class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm add-to-cart-marketplace-btn" data-id="${product.id}" type="button">Add to Cart</button>
+                        </div>
+                    `;
+                    marketplaceListDiv.appendChild(productCard);
+                });
+
+                // Attach event listeners for "Add to Cart" buttons
+                if (!marketplaceListDiv.dataset.listenersAttached) { // Prevent attaching multiple times
+                    marketplaceListDiv.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('add-to-cart-marketplace-btn')) {
+                            const productId = parseInt(e.target.dataset.id);
+                            // Ensure to get product details from wholesalerProducts loaded from localStorage
+                            const productToAdd = (JSON.parse(localStorage.getItem('wholesalerProducts')) || []).find(p => p.id === productId);
+                            if (productToAdd) {
+                                openAddToCartQuantityModal(productToAdd);
+                            } else {
+                                console.error('Product not found in wholesalerProducts for ID:', productId);
+                                alert('Could not add product. Product details missing.');
+                            }
+                        }
+                    });
+                    marketplaceListDiv.dataset.listenersAttached = 'true';
+                }
+            };
+
+            const renderPastSupplyOrders = () => {
+                const pastSupplyOrdersListDiv = document.getElementById('pastSupplyOrdersList');
+                if (!pastSupplyOrdersListDiv) return;
+
+                pastSupplyOrdersListDiv.innerHTML = ''; // Clear existing orders
+
+                // Filter all platform orders to show only THIS vendor's orders
+                // Orders include vendorInfo for filtering
+                pastSupplyOrders = allPlatformOrders.filter(order => order.vendorInfo && order.vendorInfo.email === vendorProfile.email);
+
+
+                if (pastSupplyOrders.length === 0) {
+                    pastSupplyOrdersListDiv.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No past supply orders found.</p>';
+                    return;
+                }
+
+                // Sort orders by date, most recent first
+                pastSupplyOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+
+                pastSupplyOrders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-4';
+                    orderCard.innerHTML = `
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            <div>
+                                <h4 class="font-bold text-lg">Order ID: <span class="text-blue-600">${order.orderId}</span></h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Date: ${order.orderDate}</p>
+                            </div>
+                            <div class="mt-2 sm:mt-0 text-right">
+                                <span class="text-2xl font-bold text-green-600">₹${order.totalAmount.toFixed(2)}</span>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Status: <span class="font-semibold text-purple-600">${order.status}</span></p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Items:</p>
+                        <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            ${order.items.map(item => `
+                                <li>${item.quantity} ${item.product.unit} of ${item.product.name}</li>
+                            `).join('')}
+                        </ul>
+                        <div class="flex justify-end gap-2">
+                            <button class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm view-supply-order-details-btn" data-order-id="${order.orderId}" type="button">View Details</button>
+                            <button class="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm download-invoice-btn" data-order-id="${order.orderId}" type="button">Download Invoice</button>
+                        </div>
+                    `;
+                    pastSupplyOrdersListDiv.appendChild(orderCard);
+                });
+
+                // Attach event listeners for dynamically created buttons (using event delegation on the container)
+                if (!pastSupplyOrdersListDiv.dataset.listenersAttached) {
+                    pastSupplyOrdersListDiv.addEventListener('click', (e) => {
+                        const targetBtn = e.target.closest('button');
+                        if (!targetBtn) return;
+
+                        const orderId = targetBtn.dataset.orderId;
+                        const order = pastSupplyOrders.find(o => o.orderId === orderId);
+
+                        if (targetBtn.classList.contains('view-supply-order-details-btn')) {
+                            if (order) {
+                                alert(`Viewing detailed order for ID: ${order.orderId}\nDate: ${order.orderDate}\nPayment: ${order.paymentMethod}\nStatus: ${order.status}\nTotal: ₹${order.totalAmount.toFixed(2)}\nItems:\n${order.items.map(item => `- ${item.product.name} x${item.quantity} (${item.product.unit})`).join('\n')}\n(In a real app, this would open a dedicated details page/modal)`);
+                            }
+                        } else if (targetBtn.classList.contains('download-invoice-btn')) {
+                            if (order) {
+                                generateBillHTML(order); // Pass the entire order object
+                            }
+                        }
+                    });
+                    pastSupplyOrdersListDiv.dataset.listenersAttached = 'true';
+                }
+            };
+
+
+            // Initial render calls (ensure they run once on load for potentially visible sections)
+            // These will be called by checkInitialSetup after profile is handled
+            // renderVendorProducts();
+            // renderMarketplaceProducts();
+            // renderPastSupplyOrders();
+
+
+            // --- Universal Modal for Add/Edit Product ---
+            const openAddEditProductModal = (product = null) => {
+                const isEdit = product !== null;
+                const modalTitleText = isEdit ? 'Edit Menu Item' : 'Add New Menu Item';
+                const submitButtonText = isEdit ? 'Save Changes' : 'Add Item';
+                const currentId = isEdit ? product.id : (vendorProducts.length > 0 ? Math.max(...vendorProducts.map(p => p.id)) + 1 : 1);
+
+                const formHtml = `
+                    <form id="productForm" class="space-y-4" data-product-id="${currentId}">
+                        <div>
+                            <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Item Name</label>
+                            <input type="text" id="productName" name="productName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? escapeHtml(product.name) : ''}" required>
+                        </div>
+                        <div>
+                            <label for="productDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                            <textarea id="productDescription" name="productDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">${isEdit ? escapeHtml(product.description) : ''}</textarea>
+                        </div>
+                        <div>
+                            <label for="productPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Price (₹)</label>
+                            <input type="number" id="productPrice" name="productPrice" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? product.price : ''}" required>
+                        </div>
+                        <div>
+                            <label for="productUnit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit (e.g., plate, piece, glass)</label>
+                            <input type="text" id="productUnit" name="productUnit" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" placeholder="e.g., plate, piece, serving" value="${isEdit ? escapeHtml(product.unit) : ''}" required>
+                        </div>
+                        <div>
+                            <label for="productImage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Item Image URL</label>
+                            <input type="url" id="productImage" name="productImage" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? escapeHtml(product.image) : ''}">
+                        </div>
+                        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <button type="button" id="cancelModalBtn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">${submitButtonText}</button>
+                        </div>
+                    </form>
+                `;
+
+                openUniversalModal(modalTitleText, formHtml, 'productForm', (e) => {
+                    const form = e.target;
+                    const id = parseInt(form.dataset.productId);
+                    const updatedProduct = {
+                        id: id,
+                        name: form.productName.value,
+                        description: form.productDescription.value,
+                        price: parseFloat(form.productPrice.value),
+                        unit: form.productUnit.value,
+                        // Basic validation for image URL
+                        image: form.productImage.value.startsWith('http') ? form.productImage.value : `https://via.placeholder.com/150/random_color/FFFFFF?text=${encodeURIComponent(form.productName.value).replace(/%20/g, '+')}`
+                    };
+
+                    if (isEdit) {
+                        const index = vendorProducts.findIndex(p => p.id === id);
+                        if (index !== -1) {
+                            vendorProducts[index] = updatedProduct;
+                            alert(`"${updatedProduct.name}" updated successfully!`);
+                            console.log('Product updated:', updatedProduct);
+                        }
+                    } else {
+                        vendorProducts.push(updatedProduct);
+                        alert(`"${updatedProduct.name}" added successfully!`);
+                        console.log('New product added:', updatedProduct);
+                    }
+                    closeUniversalModal(); // Close modal after successful submission
+                    renderVendorProducts(); // Re-render to show changes
+                    saveVendorData(); // Save changes to localStorage
+                });
+            };
+
+            // HTML escaping utility for pre-filling form values safely
+            function escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            // Listener for "Add New Menu Item" button to open modal
+            openAddProductModalBtn.addEventListener('click', () => openAddEditProductModal());
+
+            // --- Cart Button Functionality ---
+            cartBtn.addEventListener('click', () => {
+                let cartContentHtml = '';
+                let subtotal = 0;
+
+                if (vendorShoppingCart.length === 0) {
+                    cartContentHtml = '<p class="text-gray-600 dark:text-gray-300">Your cart is empty. Add some supplies from the Marketplace!</p>';
+                } else {
+                    cartContentHtml += `
+                        <div class="space-y-4 mb-6">
+                            ${vendorShoppingCart.map(item => {
+                                const itemEffectivePrice = getTieredPrice(item.product, item.quantity);
+                                const itemTotal = itemEffectivePrice * item.quantity;
+                                subtotal += itemTotal;
+                                return `
+                                    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2 last:border-b-0">
+                                        <div class="flex items-center gap-3">
+                                            <img src="${item.product.image}" alt="${item.product.name}" class="w-12 h-12 object-cover rounded-md">
+                                            <div>
+                                                <h4 class="font-semibold text-gray-900 dark:text-gray-100">${item.product.name}</h4>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">Qty: ${item.quantity} ${item.product.unit} @ ₹${itemEffectivePrice.toFixed(2)}/${item.product.unit}</p>
+                                            </div>
+                                        </div>
+                                        <span class="font-bold text-green-600 dark:text-green-400">₹${itemTotal.toFixed(2)}</span>
+                                        <button class="text-red-500 hover:text-red-700 ml-4 remove-from-cart-btn" data-id="${item.product.id}" type="button" title="Remove item"><i class="ph-bold ph-trash"></i></button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-4 font-bold text-xl">
+                            <span>Subtotal:</span>
+                            <span>₹${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="text-gray-600 dark:text-gray-300 text-sm mt-2">
+                            <p>GST/Taxes: ₹${(subtotal * 0.05).toFixed(2)} (5% simulated)</p>
+                            <p>Delivery Fee: ₹50.00 (flat simulated)</p>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-2 mt-2 font-bold text-2xl text-green-600 dark:text-green-400">
+                            <span>Grand Total:</span>
+                            <span>₹${(subtotal * 1.05 + 50).toFixed(2)}</span>
+                        </div>
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button id="clearCartBtn" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors" type="button">Clear Cart</button>
+                            <button id="proceedToCheckoutBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" type="button">Proceed to Checkout</button>
+                        </div>
+                    `;
+                }
+
+                openUniversalModal('Your Supply Cart', cartContentHtml);
+
+                // Attach event listeners for cart buttons after modal content is rendered
+                if (vendorShoppingCart.length > 0) {
+                    document.getElementById('clearCartBtn').addEventListener('click', () => {
+                        if (confirm('Are you sure you want to clear your entire cart?')) {
+                            vendorShoppingCart = [];
+                            updateCartCount();
+                            saveVendorData(); // Save changes
+                            closeUniversalModal();
+                            alert('Cart cleared!');
+                            console.log('Shopping cart cleared.');
+                        }
+                    });
+
+                    document.getElementById('proceedToCheckoutBtn').addEventListener('click', () => {
+                        closeUniversalModal(); // Close cart modal
+                        const currentGrandTotal = subtotal * 1.05 + 50; // Recalculate
+                        openPaymentMethodModal(currentGrandTotal); // Open payment modal
+                    });
+
+                    // Event delegation for remove individual item from cart
+                    modalContent.addEventListener('click', (e) => {
+                        if (e.target.closest('.remove-from-cart-btn')) {
+                            const productIdToRemove = parseInt(e.target.closest('.remove-from-cart-btn').dataset.id);
+                            const itemIndex = vendorShoppingCart.findIndex(item => item.product.id === productIdToRemove);
+                            if (itemIndex !== -1) {
+                                const currentItem = vendorShoppingCart[itemIndex];
+                                if (currentItem.quantity > 1) {
+                                    currentItem.quantity--;
+                                    alert(`Quantity of "${currentItem.product.name}" decreased to ${currentItem.quantity}.`);
+                                } else {
+                                    const removedItemName = currentItem.product.name;
+                                    vendorShoppingCart.splice(itemIndex, 1);
+                                    alert(`"${removedItemName}" removed from cart.`);
+                                }
+                                updateCartCount();
+                                saveVendorData(); // Save changes
+                                // Re-render the cart modal to show updated items/totals
+                                cartBtn.click(); // Re-open the cart modal with updated content
+                            }
+                        }
+                    });
+                }
+            });
+
+            // --- Modal for Quantity Input on Add to Cart (Marketplace) ---
+            const openAddToCartQuantityModal = (product) => {
+                let currentQuantity = 1;
+                const calculateLivePrice = () => {
+                    const quantityInput = document.getElementById('quantityInput');
+                    currentQuantity = parseFloat(quantityInput.value);
+                    if (isNaN(currentQuantity) || currentQuantity <= 0) {
+                        currentQuantity = 1; // Default to 1 or handle error
+                        quantityInput.value = currentQuantity;
+                    }
+                    const price = getTieredPrice(product, currentQuantity);
+                    const total = (price * currentQuantity).toFixed(2);
+                    document.getElementById('livePriceDisplay').textContent = `Current Price: ₹${price.toFixed(2)}/${product.unit}`;
+                    document.getElementById('liveTotalDisplay').textContent = `Total for ${currentQuantity} ${product.unit}s: ₹${total}`;
+                };
+
+                const contentHtml = `
+                    <div class="text-center mb-4">
+                        <img src="${product.image}" alt="${product.name}" class="w-24 h-24 object-cover rounded-md mx-auto mb-3">
+                        <h4 class="text-xl font-semibold">${product.name}</h4>
+                        <p class="text-gray-600 dark:text-gray-400">${product.description}</p>
+                    </div>
+                    <div class="mb-4">
+                        <label for="quantityInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity (${product.unit}):</label>
+                        <input type="number" id="quantityInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="1" min="1" step="any" required>
+                        <p id="livePriceDisplay" class="text-sm text-gray-500 dark:text-gray-400 mt-2">Current Price: ₹${getTieredPrice(product, 1).toFixed(2)}/${product.unit}</p>
+                        <p id="liveTotalDisplay" class="text-lg font-bold text-green-600 dark:text-green-400">Total for 1 ${product.unit}s: ₹${(getTieredPrice(product, 1) * 1).toFixed(2)}</p>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <button type="button" id="cancelModalBtn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                        <button id="addMultipleToCartBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors" type="button">Add to Cart</button>
+                    </div>
+                `;
+
+                openUniversalModal(`Add ${product.name} to Cart`, contentHtml);
+
+                const quantityInput = document.getElementById('quantityInput');
+                quantityInput.addEventListener('input', calculateLivePrice);
+
+                document.getElementById('addMultipleToCartBtn').addEventListener('click', () => {
+                    if (quantityInput.reportValidity()) { // Check HTML5 validation
+                        const quantity = parseFloat(quantityInput.value);
+                        if (isNaN(quantity) || quantity <= 0) {
+                            alert('Please enter a valid positive number for quantity.');
+                            return;
+                        }
+
+                        const existingItem = vendorShoppingCart.find(item => item.product.id === product.id);
+                        if (existingItem) {
+                            existingItem.quantity += quantity;
+                            alert(`Quantity of "${product.name}" updated to ${existingItem.quantity} in cart!`);
+                        } else {
+                            vendorShoppingCart.push({ product: product, quantity: quantity });
+                            alert(`Added ${quantity} ${product.unit} of "${product.name}" to your supply cart!`);
+                        }
+                        updateCartCount();
+                        saveVendorData(); // Save changes
+                        console.log('Current Shopping Cart:', vendorShoppingCart);
+                        closeUniversalModal();
+                    }
+                });
+            };
+
+            // --- Payment Method Modal ---
+            const openPaymentMethodModal = (finalAmount) => {
+                const paymentHtml = `
+                    <div class="text-center mb-6">
+                        <h4 class="text-2xl font-bold mb-2">Total Payable: ₹${finalAmount.toFixed(2)}</h4>
+                        <p class="text-gray-600 dark:text-gray-300">Choose your preferred payment method.</p>
+                    </div>
+                    <div class="space-y-4">
+                        <button class="w-full py-3 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white font-semibold flex items-center justify-center gap-3 payment-method-btn" data-method="UPI">
+                            <i class="ph-bold ph-qr-code text-2xl"></i> Pay with UPI
+                        </button>
+                        <button class="w-full py-3 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold flex items-center justify-center gap-3 payment-method-btn" data-method="Bank Transfer">
+                            <i class="ph-bold ph-bank text-2xl"></i> Bank Transfer
+                        </button>
+                        <button class="w-full py-3 px-4 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold flex items-center justify-center gap-3 payment-method-btn" data-method="Pay on Delivery">
+                            <i class="ph-bold ph-hand-coins text-2xl"></i> Pay on Delivery (Cash/UPI)
+                        </button>
+                        <button class="w-full py-3 px-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold flex items-center justify-center gap-3 payment-method-btn" data-method="Credit Line">
+                            <i class="ph-bold ph-wallet text-2xl"></i> Use Credit Line (Khata)
+                        </button>
+                    </div>
+                    <div class="flex justify-end mt-6">
+                        <button type="button" id="cancelModalBtn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel Payment</button>
+                    </div>
+                `;
+
+                openUniversalModal('Select Payment Method', paymentHtml);
+
+                // Add event listeners to payment method buttons
+                modalContent.querySelectorAll('.payment-method-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const method = e.target.dataset.method;
+                        const orderDateTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'long', timeStyle: 'short' });
+                        const orderId = `AM-SUPPLY-${Math.floor(Math.random() * 1000000)}`;
+
+                        // Simulate order placement/completion
+                        const completedOrder = {
+                            orderId: orderId,
+                            orderDate: orderDateTime,
+                            items: JSON.parse(JSON.stringify(vendorShoppingCart)), // Deep copy cart items
+                            totalAmount: finalAmount,
+                            paymentMethod: method,
+                            vendorName: vendorProfile.name, // Store vendor info directly
+                            vendorContact: vendorProfile.email, // Using email as contact for demo
+                            status: 'Pending' // Initial status for wholesaler
+                        };
+                        allPlatformOrders.push(completedOrder); // Add to ALL platform orders
+                        vendorShoppingCart = []; // Clear cart after "payment"
+                        updateCartCount();
+                        saveVendorData(); // Save changes (clears cart, updates allPlatformOrders)
+                        closeUniversalModal();
+
+                        alert(`Payment of ₹${finalAmount.toFixed(2)} via ${method} successful! Order ${orderId} placed.`);
+                        console.log(`Order placed: ID ${orderId}, Amount ₹${finalAmount.toFixed(2)}, Method: ${method} at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`);
+
+                        // Redirect to My Orders page to show the new order
+                        activatePage('myOrders');
+
+                        // Automatically generate and open invoice for download
+                        generateBillHTML(completedOrder); // Pass the whole order object
+                    });
+                });
+            };
+
+
+            // --- Bill Generation Logic (HTML-based for "PDF" simulation) ---
+            const generateBillHTML = (order) => {
+                const { orderId, orderDate, items, totalAmount, paymentMethod, vendorName, vendorContact } = order;
+                const vendorEmail = vendorContact; // For consistency in display
+
+                const currentDateTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'long', timeStyle: 'short' });
+
+                let subtotal = 0;
+                let itemsHtml = '';
+                let itemCounter = 1;
+
+                items.forEach(item => {
+                    const itemEffectivePrice = getTieredPrice(item.product, item.quantity);
+                    const lineTotal = itemEffectivePrice * item.quantity;
+                    subtotal += lineTotal;
+                    itemsHtml += `
+                        <tr>
+                            <td>${itemCounter++}</td>
+                            <td>${item.product.name}</td>
+                            <td>₹${itemEffectivePrice.toFixed(2)} / ${item.product.unit}</td>
+                            <td>${item.quantity} ${item.product.unit}</td>
+                            <td class="text-right">₹${lineTotal.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                const gstAmount = subtotal * 0.05; // 5% GST simulated
+                const deliveryFee = 50.00; // Flat delivery fee simulated
+                const finalGrandTotal = subtotal + gstAmount + deliveryFee;
+
+
+                let billContent = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Apna Mandi - Supply Invoice #${orderId}</title>
+                        <style>
+                            /* Embed styles directly for stand-alone invoice page */
+                            body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px; color: #333; line-height: 1.6; background-color: #f8f8f8; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; box-sizing: border-box; }
+                            .invoice-container { width: 95%; max-width: 800px; border: 1px solid #eee; padding: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.1); background-color: #fff; margin-bottom: 20px; }
+                            .invoice-header { text-align: center; margin-bottom: 20px; }
+                            .invoice-header h1 { color: #10B981; margin-bottom: 5px; font-size: 1.8em; }
+                            .invoice-header p { margin: 0; font-size: 0.8em; }
+                            .details-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
+                            @media (min-width: 640px) { .details-grid { grid-template-columns: 1fr 1fr; gap: 15px; } .invoice-container { padding: 30px; } }
+                            .details-grid div { background-color: #f9f9f9; padding: 10px; border-radius: 5px; }
+                            .details-grid strong { color: #555; }
+                            .invoice-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            .invoice-table th, .invoice-table td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.9em; }
+                            .invoice-table th { background-color: #e6ffe6; color: #333; }
+                            .text-right { text-align: right; }
+                            .summary-table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+                            .summary-table td { padding: 8px; border: none; font-size: 0.9em; }
+                            .summary-table .label { text-align: right; font-weight: bold; padding-right: 15px; }
+                            .summary-table .value { text-align: right; font-weight: bold; color: #10B981; }
+                            .summary-table .grand-total-row { border-top: 2px solid #10B981; font-size: 1.1em; }
+                            .invoice-footer { margin-top: 40px; text-align: center; font-size: 0.8em; color: #777; }
+                            .invoice-note { margin-top: 20px; padding: 15px; background-color: #fff3cd; border-left: 5px solid #ffc107; color: #664d03; font-size: 0.9em; }
+                            .download-instruction-box { text-align: center; margin-top: 20px; padding: 15px; background-color: #e0f7fa; border: 1px solid #00bcd4; border-radius: 8px; font-size: 1em; color: #00796b; }
+                            .download-instruction-box strong { color: #004d40; }
+                            .download-instruction-box button { background-color: #00796b; color: white; padding: 8px 15px; border-radius: 5px; margin-top: 10px; font-weight: bold; cursor: pointer; transition: background-color 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+                            .download-instruction-box button:hover { background-color: #004d40; }
+                            @media print { .invoice-note, .download-instruction-box { display: none; } body { background-color: #fff !important; } .invoice-container { box-shadow: none; border: none; padding: 0; } }
+                        </style>
+                        <link rel="preconnect" href="https://fonts.googleapis.com">
+                        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+                        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web/src/css/icons.css"> </head>
+                    <body class="invoice-body">
+                        <div class="invoice-container">
+                            <div class="invoice-header">
+                                <h1>Apna Mandi</h1>
+                                <p>Your Trusted B2B Marketplace for Street Food Supplies</p>
+                                <p>Kolkata, West Bengal, India</p>
+                            </div>
+
+                            <div class="details-grid">
+                                <div>
+                                    <p><strong>Invoice To:</strong></p>
+                                    <p>${vendorName}</p>
+                                    <p>${vendorEmail}</p>
+                                    <p>Phone: ${vendorContact}</p>
+                                    <p>Street Food Stall, Kolkata</p>
+                                    <p>GSTIN: N/A (Simulated)</p>
+                                </div>
+                                <div>
+                                    <p><strong>Invoice From:</strong></p>
+                                    <p>Apna Mandi Wholesalers</p>
+                                    <p>email: wholesaler@apnamandi.com</p>
+                                    <p>Phone: +91 98765 43210</p>
+                                    <p>GSTIN: ABCDE12345 (Simulated)</p>
+                                </div>
+                                <div>
+                                    <p><strong>Invoice No:</strong> ${orderId}</p>
+                                    <p><strong>Invoice Date:</strong> ${orderDate}</p>
+                                    <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+                                </div>
+                                <div>
+                                    <p><strong>Delivery Address:</strong></p>
+                                    <p>Your Stall Location (Simulated)</p>
+                                    <p>Kolkata, WB, India</p>
+                                </div>
+                            </div>
+
+                            <h2>Order Details:</h2>
+                            <table class="invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Item Name</th>
+                                        <th>Unit Price</th>
+                                        <th>Quantity</th>
+                                        <th class="text-right">Line Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHtml}
+                                </tbody>
+                            </table>
+
+                            <table class="summary-table">
+                                <tr>
+                                    <td class="label">Subtotal:</td>
+                                    <td class="value">₹${subtotal.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">GST (5%):</td>
+                                    <td class="value">₹${gstAmount.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Delivery Fee:</td>
+                                    <td class="value">₹${deliveryFee.toFixed(2)}</td>
+                                </tr>
+                                <tr class="grand-total-row">
+                                    <td class="label">Grand Total:</td>
+                                    <td class="value">₹${finalGrandTotal.toFixed(2)}</td>
+                                </tr>
+                            </table>
+
+                            <div class="download-instruction-box">
+                                <p>To **download this invoice as a PDF**, click the button below. This will open your browser's print dialog, where you can select "Save as PDF" as the destination.</p>
+                                <button id="printInvoiceBtn" type="button">
+                                    <i class="ph-bold ph-file-pdf"></i> Download Invoice as PDF
+                                </button>
+                            </div>
+
+                            <div class="invoice-footer">
+                                <p>&copy; 2025 Apna Mandi. All rights reserved.</p>
+                                <p>Generated on ${currentDateTime}</p>
+                            </div>
+                            <div class="invoice-note">
+                                <strong>Note:</strong> This is a simulated bill for demonstration purposes. For a real application, robust PDF generation and download are typically handled by a backend server for consistency and advanced features across all devices.
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                const newWindow = window.open('', '_blank');
+                newWindow.document.write(billContent);
+                newWindow.document.close();
+                newWindow.focus();
+
+                newWindow.onload = () => {
+                    const printButton = newWindow.document.getElementById('printInvoiceBtn');
+                    if (printButton) {
+                        printButton.addEventListener('click', () => {
+                            newWindow.print(); // Triggers browser's print dialog
+                        });
+                    }
+                };
+            };
+
+            // --- Initial Setup Check (runs on DOMContentLoaded) ---
+            checkInitialSetup();
+        });
+    </script>
+</body>
+</html>

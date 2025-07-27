@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesaler Dashboard - Apna Mandi</title>
+
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <meta name="description" content="Manage products, orders, and business operations on the Apna Mandi wholesaler dashboard.">
+    <meta name="keywords" content="wholesaler dashboard, Apna Mandi, marketplace, products, orders, sales, B2B, food supplies">
+    <meta name="author" content="Apna Mandi Team">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.apnamandi.com/wholesaler/dashboard"> <meta property="og:title" content="Wholesaler Dashboard - Apna Mandi">
+    <meta property="og:description" content="Manage products, orders, and business operations on the Apna Mandi wholesaler dashboard.">
+    <meta property="og:image" content="https://www.apnamandi.com/images/apnamandi-logo.png"> <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.apnamandi.com/wholesaler/dashboard"> <meta property="twitter:title" content="Wholesaler Dashboard - Apna Mandi">
+    <meta property="twitter:description" content="Manage products, orders, and business operations on the Apna Mandi wholesaler dashboard.">
+    <meta property="twitter:image" content="https://www.apnamandi.com/images/apnamandi-logo.png"> <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com/@phosphor-icons/web">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .sidebar-link.active {
+            background-color: #ECFDF5;
+            color: #10B981;
+            font-weight: 600;
+        }
+        .dark .sidebar-link.active { /* Dark mode styles for active link (if dark mode were enabled) */
+            background-color: #1D4ED8;
+            color: #6EE7B7;
+        }
+        .dashboard-locked {
+            pointer-events: none; /* Disables all clicks */
+            opacity: 0.6; /* Visually indicates disabled state */
+            filter: grayscale(100%); /* Optional: for stronger visual cue */
+        }
+        /* Mobile-specific styles for sidebar toggle */
+        #sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 40; /* Below modal but above main content */
+        }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+        @media (min-width: 768px) { /* MD breakpoint */
+            #sidebar {
+                transform: translateX(0);
+                position: relative;
+                box-shadow: none;
+            }
+            #menuToggleBtn {
+                display: none !important;
+            }
+        }
+        /* Overlay for mobile menu */
+        #menuOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 30;
+        }
+        /* Business Growth Graph Placeholder Styling */
+        .business-growth-graph-placeholder {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+            text-align: center;
+            color: #4B5563;
+        }
+        .dark .business-growth-graph-placeholder { /* Dark mode for placeholder */
+            background-color: #1F2937;
+            color: #D1D5DB;
+        }
+        .business-growth-graph-placeholder .growth-line {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to right, #10B981, #3B82F6, #F59E0B); /* Example gradient colors */
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><path fill="none" stroke="black" stroke-width="2" d="M0 40 Q 20 10 40 30 T 80 20 T 100 45"/></svg>') no-repeat center / 100% 100%;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><path fill="none" stroke="black" stroke-width="2" d="M0 40 Q 20 10 40 30 T 80 20 T 100 45"/></svg>') no-repeat center / 100% 100%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <div id="app" class="min-h-screen flex flex-col">
+
+        <div id="dashboardLayout" class="flex flex-1 flex-col md:flex-row">
+            <aside id="sidebar" class="w-full md:w-64 bg-white dark:bg-gray-800 shadow-lg flex-shrink-0 flex flex-col p-4 md:p-0 md:border-r border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700">
+                    <i class="ph-fill ph-factory text-green-500 text-3xl"></i>
+                    <div>
+                        <h3 id="wholesalerBusinessNameDisplay" class="font-bold text-lg leading-tight">Wholesaler</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">Seller Account</p>
+                    </div>
+                </div>
+                <nav id="sidebar-nav" class="flex-grow p-4 space-y-2">
+                    <a href="#dashboard" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-current="page">
+                        <i class="ph-bold ph-house text-xl"></i>
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    <a href="#myProducts" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-boxes text-xl"></i>
+                        <span class="font-medium">My Products</span>
+                    </a>
+                    <a href="#incomingOrders" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-receipt text-xl"></i>
+                        <span class="font-medium">Incoming Orders</span>
+                    </a>
+                     <a href="#reports" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-chart-bar text-xl"></i>
+                        <span class="font-medium">Reports</span>
+                    </a>
+                    <a href="#settings" class="sidebar-link flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i class="ph-bold ph-gear text-xl"></i>
+                        <span class="font-medium">Settings</span>
+                    </a>
+                </nav>
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <button id="logoutBtn" class="w-full flex items-center gap-3 py-2 px-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-red-800/50 hover:text-red-600 dark:hover:text-red-400 transition-colors" type="button">
+                        <i class="ph-bold ph-sign-out text-xl"></i>
+                        <span class="font-medium">Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <header class="bg-white dark:bg-gray-800 shadow-md flex-shrink-0 z-10">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <button id="menuToggleBtn" class="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-2xl p-2 mr-3" aria-label="Open menu">
+                                <i class="ph-bold ph-list"></i>
+                            </button>
+                            <h1 id="pageTitle" class="text-2xl font-bold">Dashboard</h1>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-2.5" aria-label="Notifications">
+                                <i class="ph-bold ph-bell text-xl"></i>
+                            </button>
+                            <div class="relative">
+                                <button id="profileMenuBtn" class="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400">
+                                    <img class="w-8 h-8 rounded-full object-cover" src="https://via.placeholder.com/150/007BFF/FFFFFF?text=W" alt="Wholesaler Avatar">
+                                    <span class="font-medium hidden md:block" id="profileDisplayName">Wholesaler</span>
+                                    <i class="ph-bold ph-caret-down text-sm"></i>
+                                </button>
+                                <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-20 hidden">
+                                    <a href="#settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600" data-target="settings">Your Profile</a>
+                                    <button id="logoutBtnDropdown" class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/50">Sign out</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <main id="mainContent" class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-100 dark:bg-gray-900">
+                    <section id="dashboard" aria-labelledby="dashboard-welcome-heading" class="mb-8 hidden page-content">
+                        <h2 id="dashboard-welcome-heading" class="text-3xl font-bold mb-2">Welcome, <span class="text-green-600" id="dashboardWholesalerNameDisplay">Wholesaler</span>!</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Here is your comprehensive wholesaler dashboard overview.</p>
+
+                        <section aria-labelledby="dashboard-stats-heading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 mt-6">
+                            <h3 id="dashboard-stats-heading" class="sr-only">Dashboard Statistics</h3>
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-5 flex flex-col items-center justify-center text-center">
+                                <i class="ph-bold ph-boxes text-3xl text-green-500 mb-2"></i>
+                                <div class="text-2xl font-bold" id="totalProductsCount">0</div>
+                                <div class="text-gray-500 dark:text-gray-400">Total Products Listed</div>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-5 flex flex-col items-center justify-center text-center">
+                                <i class="ph-bold ph-receipt text-3xl text-blue-500 mb-2"></i>
+                                <div class="text-2xl font-bold" id="incomingOrdersCount">0</div>
+                                <div class="text-gray-500 dark:text-gray-400">Incoming Orders</div>
+                            </div>
+                            <div class="business-growth-graph-placeholder lg:col-span-2">
+                                <i class="ph-bold ph-chart-line text-3xl text-yellow-500 mb-2"></i>
+                                <div class="growth-line"></div>
+                                <div class="text-lg font-bold">Business Growth Overview</div>
+                                <div class="text-gray-500 dark:text-gray-400 text-sm">Revenue trends & performance metrics</div>
+                            </div>
+                        </section>
+
+                        <section aria-labelledby="quick-actions-heading" class="mb-8">
+                            <h3 id="quick-actions-heading" class="text-xl font-semibold mb-4">Quick Actions</h3>
+                            <div class="flex flex-wrap gap-3 md:gap-4">
+                                <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="myProducts">
+                                    <i class="ph-bold ph-plus"></i> Add New Product
+                                </button>
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="incomingOrders">
+                                    <i class="ph-bold ph-list"></i> View Orders
+                                </button>
+                                <button class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="reports">
+                                    <i class="ph-bold ph-chart-bar"></i> View Sales Reports
+                                </button>
+                                <button class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors quick-action-btn" data-target="settings">
+                                    <i class="ph-bold ph-gear"></i> Account Settings
+                                </button>
+                            </div>
+                        </section>
+                    </section>
+
+                    <section id="myProducts" aria-labelledby="my-products-heading" class="mb-8 hidden page-content">
+                        <h2 id="my-products-heading" class="text-3xl font-bold mb-6">My Products</h2>
+                        <div class="mb-6 flex justify-end">
+                            <button id="openAddProductModalBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" type="button">
+                                <i class="ph-bold ph-plus"></i> Add New Product
+                            </button>
+                        </div>
+                        <div id="wholesalerProductsList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                            </div>
+                    </section>
+
+                    <section id="incomingOrders" aria-labelledby="incoming-orders-heading" class="mb-8 hidden page-content">
+                        <h2 id="incoming-orders-heading" class="text-3xl font-bold mb-6">Incoming Orders</h2>
+                        <div id="incomingOrdersList" class="space-y-4">
+                            </div>
+                    </section>
+
+                    <section id="reports" aria-labelledby="reports-heading" class="mb-8 hidden page-content">
+                        <h2 id="reports-heading" class="text-3xl font-bold mb-6">Reports</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Detailed sales, inventory, and vendor performance reports will be available here.</p>
+                        <div class="business-growth-graph-placeholder mt-6">
+                             <i class="ph-bold ph-chart-bar text-3xl text-blue-500 mb-2"></i>
+                            <div class="text-lg font-bold">Comprehensive Reports Coming Soon!</div>
+                            <div class="text-gray-500 dark:text-gray-400 text-sm">Detailed analytics on your sales, inventory, and top buyers.</div>
+                        </div>
+                    </section>
+
+                    <section id="settings" aria-labelledby="settings-heading" class="mb-8 hidden page-content">
+                        <h2 id="settings-heading" class="text-3xl font-bold mb-6">Settings</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Manage your business profile and account preferences.</p>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 mt-6">
+                            <h3 class="text-xl font-semibold mb-4">Business Information</h3>
+                            <form id="wholesalerProfileForm" class="space-y-4">
+                                <div>
+                                    <label for="businessNameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</label>
+                                    <input type="text" id="businessNameInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="" required>
+                                </div>
+                                <div>
+                                    <label for="contactEmailInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contact Email</label>
+                                    <input type="email" id="contactEmailInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="" required>
+                                </div>
+                                <div>
+                                    <label for="contactPhoneInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                                    <input type="tel" id="contactPhoneInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="" required>
+                                </div>
+                                <div>
+                                    <label for="gstinInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">GSTIN (if applicable)</label>
+                                    <input type="text" id="gstinInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="">
+                                </div>
+                                <div>
+                                    <label for="fssaiInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">FSSAI License Number</label>
+                                    <input type="text" id="fssaiInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="">
+                                </div>
+                                <div>
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                </main>
+            </div>
+        </div>
+
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitleActual" aria-describedby="modalDescription">
+            <div id="modalContent" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] flex flex-col transform transition-all">
+                </div>
+        </div>
+
+        <div id="wholesalerSetupModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
+                <h2 class="text-2xl font-bold text-center mb-4">Complete Your Business Profile</h2>
+                <p class="text-gray-600 dark:text-gray-300 text-center mb-6">Please provide your essential business details to get started.</p>
+                <form id="initialWholesalerSetupForm" class="space-y-4">
+                    <div>
+                        <label for="setupBusinessName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</label>
+                        <input type="text" id="setupBusinessName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                     <div>
+                        <label for="setupContactEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contact Email</label>
+                        <input type="email" id="setupContactEmail" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div>
+                        <label for="setupContactPhone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                        <input type="tel" id="setupContactPhone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div>
+                        <label for="setupGSTIN" class="block text-sm font-medium text-gray-700 dark:text-gray-300">GSTIN (Optional)</label>
+                        <input type="text" id="setupGSTIN" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+                    </div>
+                    <div>
+                        <label for="setupFSSAI" class="block text-sm font-medium text-gray-700 dark:text-gray-300">FSSAI License No. (Optional)</label>
+                        <input type="text" id="setupFSSAI" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+                    </div>
+                    <div class="flex justify-center pt-4">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Save Profile & Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="menuOverlay" class="hidden md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+
+    </div>
+
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const sidebar = document.getElementById('sidebar');
+            const menuToggleBtn = document.getElementById('menuToggleBtn');
+            const menuOverlay = document.getElementById('menuOverlay');
+
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const pageContents = document.querySelectorAll('.page-content');
+            const pageTitle = document.getElementById('pageTitle');
+            const profileMenuBtn = document.getElementById('profileMenuBtn');
+            const profileDropdown = document.getElementById('profileDropdown');
+            const logoutBtnDropdown = document.getElementById('logoutBtnDropdown');
+            const logoutBtnSidebar = document.getElementById('logoutBtn');
+
+            // Wholesaler profile display elements
+            const wholesalerBusinessNameDisplay = document.getElementById('wholesalerBusinessNameDisplay'); // In sidebar header
+            const profileDisplayName = document.getElementById('profileDisplayName'); // In top right dropdown trigger
+            const dashboardWholesalerNameDisplay = document.getElementById('dashboardWholesalerNameDisplay'); // In dashboard welcome message
+            const businessNameInput = document.getElementById('businessNameInput'); // In settings form
+            const contactEmailInput = document.getElementById('contactEmailInput'); // In settings form
+            const contactPhoneInput = document.getElementById('contactPhoneInput'); // In settings form
+            const gstinInput = document.getElementById('gstinInput'); // In settings form
+            const fssaiInput = document.getElementById('fssaiInput'); // In settings form
+
+            // Mandatory setup elements
+            const wholesalerSetupModal = document.getElementById('wholesalerSetupModal');
+            const initialWholesalerSetupForm = document.getElementById('initialWholesalerSetupForm');
+            const setupBusinessName = document.getElementById('setupBusinessName');
+            const setupContactEmail = document.getElementById('setupContactEmail');
+            const setupContactPhone = document.getElementById('setupContactPhone');
+            const setupGSTIN = document.getElementById('setupGSTIN');
+            const setupFSSAI = document.getElementById('setupFSSAI');
+            const dashboardLayout = document.getElementById('dashboardLayout'); // The main layout to lock
+
+            // Dashboard Stats Elements
+            const totalProductsCount = document.getElementById('totalProductsCount');
+            const incomingOrdersCount = document.getElementById('incomingOrdersCount');
+
+
+            // --- User Profile Data (Persisted in localStorage for demo) ---
+            let wholesalerProfile = JSON.parse(localStorage.getItem('wholesalerProfile')) || {
+                businessName: '',
+                contactEmail: '',
+                contactPhone: '',
+                gstin: '',
+                fssai: '',
+                isSetupComplete: false
+            };
+
+            // --- Product and Order Data (Persisted in localStorage for demo) ---
+            // Using placeholder data if nothing in localStorage
+            let wholesalerProducts = JSON.parse(localStorage.getItem('wholesalerProducts')) || [
+                { id: 1, name: 'Premium Basmati Rice', description: 'Aged, extra-long grain basmati rice, 25kg bag.', basePrice: 90, unit: 'kg', minOrderQuantity: 25, stock: 500, image: 'https://via.placeholder.com/150/F5DEB3/000000?text=Basmati+Rice' },
+                { id: 2, name: 'Fresh Red Onions', description: 'Large, firm red onions, 20kg mesh bag.', basePrice: 28, unit: 'kg', minOrderQuantity: 20, stock: 800, image: 'https://via.placeholder.com/150/DAA520/FFFFFF?text=Red+Onions' },
+                { id: 3, name: 'Cooking Oil (Sunflower)', description: 'Refined sunflower oil, 15L jar. Ideal for deep frying.', basePrice: 140, unit: 'liter', minOrderQuantity: 15, stock: 300, image: 'https://via.placeholder.com/150/FFFF00/000000?text=Sunflower+Oil' },
+                { id: 4, name: 'Dried Chickpeas (Chana)', description: 'High-quality dried white chickpeas, 10kg bag.', basePrice: 65, unit: 'kg', minOrderQuantity: 10, stock: 400, image: 'https://via.placeholder.com/150/CD853F/FFFFFF?text=Chickpeas' },
+                { id: 5, name: 'Pure Mustard Oil', description: 'Cold-pressed pure mustard oil, 5L can. Authentic flavor.', basePrice: 170, unit: 'liter', minOrderQuantity: 5, stock: 250, image: 'https://via.placeholder.com/150/FFD700/000000?text=Mustard+Oil' },
+                 { id: 6, name: 'Farm Fresh Potatoes', description: 'Medium-sized, fresh potatoes, 50kg bag. Versatile for all dishes.', basePrice: 22, unit: 'kg', minOrderQuantity: 50, stock: 1200, image: 'https://via.placeholder.com/150/FF7F50/FFFFFF?text=Potatoes' },
+                { id: 7, name: 'Green Chillies (Bulk)', description: 'Fresh, pungent green chillies, 5kg pack. Essential for spice.', basePrice: 95, unit: 'kg', minOrderQuantity: 5, stock: 150, image: 'https://via.placeholder.com/150/32CD32/FFFFFF?text=Green+Chillies' },
+                { id: 8, name: 'Coriander Powder', description: 'Finely ground coriander powder, 1kg pack. Aromatic and essential.', basePrice: 70, unit: 'kg', minOrderQuantity: 1, stock: 200, image: 'https://via.placeholder.com/150/DAA520/FFFFFF?text=Coriander+Powder' },
+                { id: 9, name: 'Red Chilli Powder', description: 'Spicy red chilli powder, 1kg pack. For heat and color.', basePrice: 85, unit: 'kg', minOrderQuantity: 1, stock: 180, image: 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Red+Chilli+Powder' },
+                { id: 10, name: 'Turmeric Powder', description: 'Pure turmeric powder, 1kg pack. For color and health benefits.', basePrice: 75, unit: 'kg', minOrderQuantity: 1, stock: 220, image: 'https://via.placeholder.com/150/FFD700/000000?text=Turmeric+Powder' },
+            ];
+
+            let incomingOrders = JSON.parse(localStorage.getItem('incomingWholesalerOrders')) || [
+                {
+                    orderId: 'VORD-001',
+                    vendorName: 'Priya\'s Phuchka',
+                    vendorContact: 'priya@example.com',
+                    orderDate: 'July 26, 2025 at 10:30 AM',
+                    status: 'Pending',
+                    totalAmount: 1850,
+                    items: [
+                        { productId: 2, name: 'Fresh Red Onions', quantity: 20, unit: 'kg', price: 28 },
+                        { productId: 3, name: 'Cooking Oil (Sunflower)', quantity: 5, unit: 'liter', price: 140 }
+                    ]
+                },
+                {
+                    orderId: 'VORD-002',
+                    vendorName: 'Rahul\'s Rolls',
+                    vendorContact: 'rahul@example.com',
+                    orderDate: 'July 25, 2025 at 03:15 PM',
+                    status: 'Processing',
+                    totalAmount: 3500,
+                    items: [
+                        { productId: 1, name: 'Premium Basmati Rice', quantity: 25, unit: 'kg', price: 90 },
+                        { productId: 4, name: 'Dried Chickpeas (Chana)', quantity: 10, unit: 'kg', price: 65 }
+                    ]
+                }
+            ];
+
+            // Save data to localStorage whenever it changes
+            const saveWholesalerData = () => {
+                localStorage.setItem('wholesalerProducts', JSON.stringify(wholesalerProducts));
+                localStorage.setItem('incomingWholesalerOrders', JSON.stringify(incomingOrders));
+                localStorage.setItem('wholesalerProfile', JSON.stringify(wholesalerProfile));
+            };
+
+            // Helper function to update dashboard stats
+            const updateDashboardStats = () => {
+                totalProductsCount.textContent = wholesalerProducts.length;
+                incomingOrdersCount.textContent = incomingOrders.length;
+            };
+
+            // --- Function to update all display elements with current profile data ---
+            const updateProfileDisplay = () => {
+                const displayName = wholesalerProfile.businessName || 'Wholesaler';
+                wholesalerBusinessNameDisplay.textContent = displayName;
+                profileDisplayName.textContent = displayName;
+                dashboardWholesalerNameDisplay.textContent = displayName;
+                // Prefill settings form inputs
+                businessNameInput.value = wholesalerProfile.businessName;
+                contactEmailInput.value = wholesalerProfile.contactEmail;
+                contactPhoneInput.value = wholesalerProfile.contactPhone;
+                gstinInput.value = wholesalerProfile.gstin;
+                fssaiInput.value = wholesalerProfile.fssai;
+            };
+
+            // --- Function to toggle dashboard locked state ---
+            const toggleDashboardLock = (lock) => {
+                if (lock) {
+                    dashboardLayout.classList.add('dashboard-locked');
+                } else {
+                    dashboardLayout.classList.remove('dashboard-locked');
+                }
+            };
+
+            // --- Initial Setup Check & Modal Display ---
+            const checkInitialSetup = () => {
+                if (!wholesalerProfile.isSetupComplete) {
+                    wholesalerSetupModal.classList.remove('hidden');
+                    wholesalerSetupModal.classList.add('flex');
+                    toggleDashboardLock(true); // Lock the rest of the dashboard
+                    // Prefill setup form if any data already exists
+                    setupBusinessName.value = wholesalerProfile.businessName;
+                    setupContactEmail.value = wholesalerProfile.contactEmail;
+                    setupContactPhone.value = wholesalerProfile.contactPhone;
+                    setupGSTIN.value = wholesalerProfile.gstin;
+                    setupFSSAI.value = wholesalerProfile.fssai;
+                } else {
+                    wholesalerSetupModal.classList.add('hidden'); // Ensure hidden
+                    wholesalerSetupModal.classList.remove('flex');
+                    toggleDashboardLock(false); // Unlock dashboard
+                    updateProfileDisplay(); // Update display with loaded profile
+                    updateDashboardStats(); // Update dashboard stats on load
+                }
+            };
+
+            // Handle initial business profile setup form submission
+            initialWholesalerSetupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Basic validation (browser's 'required' attribute handles most)
+                if (!setupBusinessName.value || !setupContactEmail.value || !setupContactPhone.value) {
+                    alert('Please fill in all required profile fields.');
+                    return;
+                }
+
+                wholesalerProfile.businessName = setupBusinessName.value;
+                wholesalerProfile.contactEmail = setupContactEmail.value;
+                wholesalerProfile.contactPhone = setupContactPhone.value;
+                wholesalerProfile.gstin = setupGSTIN.value;
+                wholesalerProfile.fssai = setupFSSAI.value;
+                wholesalerProfile.isSetupComplete = true;
+
+                saveWholesalerData(); // Save to local storage
+                updateProfileDisplay(); // Update display elements
+                toggleDashboardLock(false); // Unlock dashboard
+                wholesalerSetupModal.classList.add('hidden'); // Hide modal
+                wholesalerSetupModal.classList.remove('flex');
+                updateDashboardStats(); // Update dashboard stats
+
+                alert('Business profile setup complete! Welcome to your dashboard.');
+                console.log('Initial wholesaler profile setup complete:', wholesalerProfile);
+                activatePage('dashboard'); // Redirect to dashboard
+            });
+
+            // --- Mobile Sidebar Toggle ---
+            menuToggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                menuOverlay.classList.toggle('hidden');
+            });
+
+            menuOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                menuOverlay.classList.add('hidden');
+            });
+
+            // Close sidebar when a navigation link is clicked (on mobile)
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 768) { // Only close on mobile views
+                        sidebar.classList.remove('open');
+                        menuOverlay.classList.add('hidden');
+                    }
+                });
+            });
+
+            // --- Central Page Activation Function ---
+            const activatePage = (targetId) => {
+                if (!wholesalerProfile.isSetupComplete) {
+                    console.log('Business profile setup not complete. Navigation blocked.');
+                    checkInitialSetup(); // Ensure setup modal is visible
+                    return;
+                }
+
+                history.pushState(null, '', `#${targetId}`);
+
+                sidebarLinks.forEach(item => item.classList.remove('active'));
+                document.querySelectorAll('.quick-action-btn').forEach(item => item.classList.remove('active')); // Quick action buttons don't have .active class, but clean defensively
+
+                const targetLink = document.querySelector(`.sidebar-link[href="#${targetId}"]`);
+                if (targetLink) {
+                    targetLink.classList.add('active');
+                    pageTitle.textContent = targetLink.querySelector('span').textContent;
+                } else {
+                    const targetSectionHeading = document.getElementById(targetId)?.querySelector('h2, h3');
+                    if (targetSectionHeading) {
+                         pageTitle.textContent = targetSectionHeading.textContent;
+                    } else {
+                         pageTitle.textContent = 'Page Not Found';
+                    }
+                }
+
+                pageContents.forEach(section => section.classList.add('hidden'));
+
+                const targetPage = document.getElementById(targetId);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                }
+
+                // Call specific render functions for dynamic content when entering a section
+                if (targetId === 'myProducts') {
+                    renderWholesalerProducts();
+                } else if (targetId === 'incomingOrders') {
+                    renderIncomingOrders();
+                } else if (targetId === 'settings') {
+                    updateProfileDisplay(); // Ensure settings form is pre-filled
+                }
+                updateDashboardStats(); // Keep stats updated on page change
+                console.log(`Mapsd to: ${targetId} at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`);
+            };
+
+            // --- Event Listeners for Navigation ---
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    activatePage(targetId);
+                });
+            });
+
+            document.querySelectorAll('.quick-action-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = button.dataset.target;
+                    activatePage(targetId);
+                });
+            });
+
+            window.addEventListener('popstate', () => {
+                const hash = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+                activatePage(hash);
+            });
+
+            // --- Header Profile Dropdown ---
+            profileMenuBtn.addEventListener('click', () => {
+                const isExpanded = profileMenuBtn.getAttribute('aria-expanded') === 'true';
+                profileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+                profileDropdown.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!profileMenuBtn.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.add('hidden');
+                    profileMenuBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // --- Logout Functionality ---
+            const handleLogout = () => {
+                if (confirm('Are you sure you want to log out?')) {
+                    alert('Logging out...');
+                    localStorage.removeItem('wholesalerProfile'); // Clear profile
+                    localStorage.removeItem('wholesalerProducts'); // Clear products
+                    localStorage.removeItem('incomingWholesalerOrders'); // Clear orders
+                    // Reset local data
+                    wholesalerProfile = { businessName: '', contactEmail: '', contactPhone: '', gstin: '', fssai: '', isSetupComplete: false };
+                    wholesalerProducts = [];
+                    incomingOrders = [];
+                    
+                    updateProfileDisplay();
+                    updateDashboardStats(); // Reset stats to zero
+                    
+                    // Simulate redirect to login page (reload current file)
+                    location.reload(); 
+                    console.log('Wholesaler logged out at', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+                }
+            };
+            logoutBtnDropdown.addEventListener('click', handleLogout);
+            logoutBtnSidebar.addEventListener('click', handleLogout);
+
+            // --- Settings Form (Save Changes) ---
+            document.getElementById('wholesalerProfileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                wholesalerProfile.businessName = businessNameInput.value;
+                wholesalerProfile.contactEmail = contactEmailInput.value;
+                wholesalerProfile.contactPhone = contactPhoneInput.value;
+                wholesalerProfile.gstin = gstinInput.value;
+                wholesalerProfile.fssai = fssaiInput.value;
+                wholesalerProfile.isSetupComplete = true; // Ensure marked complete
+
+                saveWholesalerData(); // Save changes
+                updateProfileDisplay(); // Update display elements
+                alert('Profile changes saved successfully!');
+                console.log('Wholesaler profile form submitted and saved at', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), wholesalerProfile);
+            });
+
+            // --- Universal Modal Management ---
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modalContent');
+
+            const openUniversalModal = (title, contentHTML, formId = null, onSubmitCallback = null) => {
+                modalContent.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 p-4">
+                        <h3 id="modalTitleActual" class="text-xl font-bold">${title}</h3>
+                        <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Close modal" type="button">
+                            <i class="ph-bold ph-x text-2xl"></i>
+                        </button>
+                    </div>
+                    <div id="modalDescription" class="p-6 overflow-y-auto flex-grow">
+                        ${contentHTML}
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                document.getElementById('closeModalBtn').addEventListener('click', closeUniversalModal);
+
+                const cancelButton = modalContent.querySelector('#cancelModalBtn');
+                if (cancelButton) {
+                    cancelButton.addEventListener('click', closeUniversalModal);
+                }
+
+                if (formId && onSubmitCallback) {
+                    const formElement = document.getElementById(formId);
+                    if (formElement) {
+                        const oldSubmitHandler = formElement._submitHandler;
+                        if (oldSubmitHandler) {
+                            formElement.removeEventListener('submit', oldSubmitHandler);
+                        }
+                        const newSubmitHandler = (e) => {
+                            e.preventDefault();
+                            onSubmitCallback(e);
+                        };
+                        formElement.addEventListener('submit', newSubmitHandler);
+                        formElement._submitHandler = newSubmitHandler;
+                    }
+                }
+            };
+
+            const closeUniversalModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modalContent.innerHTML = '';
+            };
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeUniversalModal();
+                }
+            });
+
+
+            // --- My Products Section (Wholesaler's Own Products) ---
+            const renderWholesalerProducts = () => {
+                const productListDiv = document.getElementById('wholesalerProductsList');
+                if (!productListDiv) return;
+
+                productListDiv.innerHTML = ''; // Clear existing products
+
+                if (wholesalerProducts.length === 0) {
+                    productListDiv.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400">No products added yet. Click "Add New Product" to start listing your supplies.</p>';
+                    return;
+                }
+
+                wholesalerProducts.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col items-center text-center';
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="w-32 h-32 object-cover rounded-md mb-3">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">${product.name}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">${product.description}</p>
+                        <p class="text-green-600 dark:text-green-400 font-bold text-xl mb-1">₹${product.basePrice.toFixed(2)}/${product.unit}</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mb-3">MOQ: ${product.minOrderQuantity} ${product.unit} | Stock: ${product.stock} ${product.unit}</p>
+                        <div class="flex gap-2">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded-lg transition-colors edit-product-btn" data-id="${product.id}" type="button">Edit</button>
+                            <button class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-lg transition-colors delete-product-btn" data-id="${product.id}" type="button">Delete</button>
+                        </div>
+                    `;
+                    productListDiv.appendChild(productCard);
+                });
+
+                if (!productListDiv.dataset.listenersAttached) {
+                    productListDiv.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('edit-product-btn')) {
+                            const productId = parseInt(e.target.dataset.id);
+                            const productToEdit = wholesalerProducts.find(p => p.id === productId);
+                            if (productToEdit) {
+                                openAddEditProductModal(productToEdit);
+                            }
+                        } else if (e.target.classList.contains('delete-product-btn')) {
+                            const productId = parseInt(e.target.dataset.id);
+                            const productName = wholesalerProducts.find(p => p.id === productId)?.name || 'this product';
+                            if (confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
+                                wholesalerProducts = wholesalerProducts.filter(p => p.id !== productId);
+                                saveWholesalerData();
+                                renderWholesalerProducts();
+                                updateDashboardStats();
+                                alert(`${productName} deleted successfully.`);
+                                console.log(`Product with ID: ${productId} deleted.`);
+                            }
+                        }
+                    });
+                    productListDiv.dataset.listenersAttached = 'true';
+                }
+            };
+
+            // --- Incoming Orders Section ---
+            const renderIncomingOrders = () => {
+                const incomingOrdersListDiv = document.getElementById('incomingOrdersList');
+                if (!incomingOrdersListDiv) return;
+
+                incomingOrdersListDiv.innerHTML = '';
+
+                // Get all platform orders and filter only relevant ones for this wholesaler
+                // (For simplicity in this demo, all orders from 'allPlatformOrders' are shown here.
+                // In a real system, you'd filter orders containing products from THIS wholesaler ID.)
+                const relevantOrders = JSON.parse(localStorage.getItem('allPlatformOrders')) || [];
+
+
+                if (relevantOrders.length === 0) {
+                    incomingOrdersListDiv.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400">No new incoming orders at the moment.</p>';
+                    return;
+                }
+
+                // Sort orders by date, most recent first
+                relevantOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+
+                relevantOrders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-4';
+                    orderCard.innerHTML = `
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            <div>
+                                <h4 class="font-bold text-lg">Order ID: <span class="text-blue-600">${order.orderId}</span></h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">From: ${order.vendorName} (${order.vendorContact})</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Date: ${order.orderDate}</p>
+                            </div>
+                            <div class="mt-2 sm:mt-0 text-right">
+                                <span class="text-2xl font-bold text-green-600">₹${order.totalAmount.toFixed(2)}</span>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Status: <span class="font-semibold text-purple-600">${order.status}</span></p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Items:</p>
+                        <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            ${order.items.map(item => `
+                                <li>${item.quantity} ${item.product.unit} of ${item.product.name}</li>
+                            `).join('')}
+                        </ul>
+                        <div class="flex justify-end gap-2">
+                            <button class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm view-order-details-btn" data-order-id="${order.orderId}" type="button">View Details</button>
+                            ${order.status === 'Pending' ? `
+                                <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm update-order-status-btn" data-order-id="${order.orderId}" data-new-status="Processing" type="button">Accept Order</button>
+                            ` : order.status === 'Processing' ? `
+                                <button class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm update-order-status-btn" data-order-id="${order.orderId}" data-new-status="Shipped" type="button">Mark Shipped</button>
+                            ` : order.status === 'Shipped' ? `
+                                <button class="px-3 py-1 bg-gray-500 text-white rounded-lg text-sm cursor-not-allowed" disabled>Delivered</button>
+                            ` : ''}
+                        </div>
+                    `;
+                    incomingOrdersListDiv.appendChild(orderCard);
+                });
+
+                if (!incomingOrdersListDiv.dataset.listenersAttached) {
+                    incomingOrdersListDiv.addEventListener('click', (e) => {
+                        const targetBtn = e.target.closest('button');
+                        if (!targetBtn) return;
+
+                        const orderId = targetBtn.dataset.orderId;
+                        const orderIndex = relevantOrders.findIndex(o => o.orderId === orderId);
+                        const order = relevantOrders[orderIndex];
+
+                        if (targetBtn.classList.contains('view-order-details-btn')) {
+                            if (order) {
+                                alert(`Order Details for ID: ${order.orderId}\nVendor: ${order.vendorName} (${order.vendorContact})\nDate: ${order.orderDate}\nStatus: ${order.status}\nTotal: ₹${order.totalAmount.toFixed(2)}\nItems:\n${order.items.map(item => `- ${item.quantity} ${item.product.unit} of ${item.product.name} @ ₹${item.product.price.toFixed(2)}`).join('\n')}\n(In a real app, this would open a detailed order page/modal)`);
+                            }
+                        } else if (targetBtn.classList.contains('update-order-status-btn')) {
+                            const newStatus = targetBtn.dataset.newStatus;
+                            if (confirm(`Change status of Order ${order.orderId} to "${newStatus}"?`)) {
+                                // Update status in the relevantOrders array
+                                order.status = newStatus;
+
+                                // --- Crucial: Update the GLOBAL allPlatformOrders array ---
+                                let globalOrders = JSON.parse(localStorage.getItem('allPlatformOrders')) || [];
+                                const globalOrderIndex = globalOrders.findIndex(o => o.orderId === order.orderId);
+                                if (globalOrderIndex !== -1) {
+                                    globalOrders[globalOrderIndex].status = newStatus;
+                                    // Simulate stock deduction when order is accepted/processed
+                                    if (newStatus === 'Processing') {
+                                        order.items.forEach(orderedItem => {
+                                            const productInStock = wholesalerProducts.find(p => p.id === orderedItem.product.id);
+                                            if (productInStock) {
+                                                productInStock.stock -= orderedItem.quantity;
+                                                if (productInStock.stock < 0) productInStock.stock = 0; // Prevent negative stock
+                                            }
+                                        });
+                                    }
+                                }
+                                localStorage.setItem('allPlatformOrders', JSON.stringify(globalOrders)); // Save global orders
+                                saveWholesalerData(); // Save wholesaler specific data (products, profile)
+                                
+                                renderIncomingOrders(); // Re-render orders
+                                updateDashboardStats(); // Update stats
+                                alert(`Order ${order.orderId} status updated to "${newStatus}"!`);
+                                console.log(`Order ${order.orderId} status updated to ${newStatus}. Stock adjusted.`, order);
+                            }
+                        }
+                    });
+                    incomingOrdersListDiv.dataset.listenersAttached = 'true';
+                }
+            };
+
+
+            // --- Universal Modal for Add/Edit Product ---
+            const openAddEditProductModal = (product = null) => {
+                const isEdit = product !== null;
+                const modalTitleText = isEdit ? 'Edit Product' : 'Add New Product';
+                const submitButtonText = isEdit ? 'Save Changes' : 'Add Product';
+                const currentId = isEdit ? product.id : (wholesalerProducts.length > 0 ? Math.max(...wholesalerProducts.map(p => p.id)) + 1 : 1);
+
+                const formHtml = `
+                    <form id="productForm" class="space-y-4" data-product-id="${currentId}">
+                        <div>
+                            <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name</label>
+                            <input type="text" id="productName" name="productName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? escapeHtml(product.name) : ''}" required>
+                        </div>
+                        <div>
+                            <label for="productDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                            <textarea id="productDescription" name="productDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">${isEdit ? escapeHtml(product.description) : ''}</textarea>
+                        </div>
+                        <div>
+                            <label for="basePrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Base Price (₹)</label>
+                            <input type="number" id="basePrice" name="basePrice" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? product.basePrice : ''}" required>
+                        </div>
+                        <div>
+                            <label for="productUnit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit (e.g., kg, liter, piece)</label>
+                            <input type="text" id="productUnit" name="productUnit" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" placeholder="e.g., kg, liter, piece" value="${isEdit ? escapeHtml(product.unit) : ''}" required>
+                        </div>
+                         <div>
+                            <label for="minOrderQuantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Minimum Order Quantity (MOQ)</label>
+                            <input type="number" id="minOrderQuantity" name="minOrderQuantity" step="any" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? product.minOrderQuantity : '1'}" required>
+                        </div>
+                        <div>
+                            <label for="stock" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Current Stock</label>
+                            <input type="number" id="stock" name="stock" step="any" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? product.stock : '0'}" required>
+                        </div>
+                        <div>
+                            <label for="productImage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product Image URL</label>
+                            <input type="url" id="productImage" name="productImage" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" value="${isEdit ? escapeHtml(product.image) : ''}">
+                        </div>
+                        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <button type="button" id="cancelModalBtn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">${submitButtonText}</button>
+                        </div>
+                    </form>
+                `;
+
+                openUniversalModal(modalTitleText, formHtml, 'productForm', (e) => {
+                    const form = e.target;
+                    const id = parseInt(form.dataset.productId);
+                    const updatedProduct = {
+                        id: id,
+                        name: form.productName.value,
+                        description: form.productDescription.value,
+                        basePrice: parseFloat(form.basePrice.value),
+                        unit: form.productUnit.value,
+                        minOrderQuantity: parseFloat(form.minOrderQuantity.value),
+                        stock: parseFloat(form.stock.value),
+                        image: form.productImage.value.startsWith('http') ? form.productImage.value : `https://via.placeholder.com/150/random_color/FFFFFF?text=${encodeURIComponent(form.productName.value).replace(/%20/g, '+')}`
+                    };
+
+                    if (isEdit) {
+                        const index = wholesalerProducts.findIndex(p => p.id === id);
+                        if (index !== -1) {
+                            wholesalerProducts[index] = updatedProduct;
+                            alert(`"${updatedProduct.name}" updated successfully!`);
+                            console.log('Product updated:', updatedProduct);
+                        }
+                    } else {
+                        wholesalerProducts.push(updatedProduct);
+                        alert(`"${updatedProduct.name}" added successfully!`);
+                        console.log('New product added:', updatedProduct);
+                    }
+                    closeUniversalModal();
+                    saveWholesalerData(); // Save changes
+                    renderWholesalerProducts(); // Re-render products
+                    updateDashboardStats(); // Update dashboard product count
+                });
+            };
+
+            // HTML escaping utility for pre-filling form values safely
+            function escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+
+            document.getElementById('openAddProductModalBtn').addEventListener('click', () => openAddEditProductModal());
+
+
+            // --- Initial Checks and Renders ---
+            checkInitialSetup(); // This will trigger the whole flow
+            updateDashboardStats(); // Initial stats display
+        });
+    </script>
+</body>
+</html>
